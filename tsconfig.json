@@ -4,7 +4,6 @@
       "esnext",
       "dom"
     ],
-    "types": ["nativewind/types"],
     "target": "esnext",
     "module": "esnext",
     "moduleDetection": "force",
@@ -38,16 +37,12 @@
       ],
       "@screens/*": [
         "app/screens/*"
-      ],
-      "@components/*": [
-        "app/components/*"
       ]
     }
   },
   "include": [
     "index.ts",
-    "app",
-    "nativewind-env.d.ts"
+    "app"
   ],
   "extends": "expo/tsconfig.base"
 }

@@ -1,23 +1,39 @@
 import React from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { useAuth } from "../services/auth/useAuth";
-import Button from "@components/Button";
 
 export default function WelcomeScreen() {
   const { session, signOut, loading } = useAuth();
-  if (loading) return <ActivityIndicator className="flex-1" />;
+  if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
   return (
-    <View className="flex-1 justify-center items-center bg-white px-6">
-      <Text className="text-3xl font-bold mb-4 text-gray-900">Welcome!</Text>
-      <Text className="text-lg mb-8 text-gray-600 text-center">
-        {session?.user?.email}
-      </Text>
-      <Button
-        title="Sign Out"
-        onPress={signOut}
-        variant="secondary"
-        size="lg"
-      />
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome!</Text>
+      <Text style={styles.email}>{session?.user?.email}</Text>
+      <Button title="Sign Out" onPress={signOut} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  email: {
+    fontSize: 18,
+    marginBottom: 32,
+  },
+});
