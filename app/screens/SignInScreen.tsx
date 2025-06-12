@@ -10,7 +10,7 @@ import {
 import { useAuth } from "../services/auth/useAuth";
 
 export default function SignInScreen() {
-  const { signInWithGoogle, signInWithOtp, loading, error } = useAuth();
+  const { signInWithOtp, loading, error } = useAuth();
   const [email, setEmail] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [message, setMessage] = useState("");
@@ -41,11 +41,6 @@ export default function SignInScreen() {
         disabled={loading || !email}
       />
       <View style={styles.divider} />
-      <Button
-        title="Sign in with Google"
-        onPress={signInWithGoogle}
-        disabled={loading}
-      />
       {loading && <ActivityIndicator style={{ marginTop: 16 }} />}
       {message ? <Text style={styles.message}>{message}</Text> : null}
     </View>

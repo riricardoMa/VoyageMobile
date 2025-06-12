@@ -13,7 +13,6 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   error: string | null;
-  signInWithGoogle: () => Promise<void>;
   signInWithOtp: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -36,16 +35,6 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
     return () => {
       data.subscription.unsubscribe();
     };
-  }, []);
-
-  const signInWithGoogle = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
-    if (error) setError(error.message);
-    setLoading(false);
   }, []);
 
   const signInWithOtp = useCallback(async (email: string) => {
@@ -71,7 +60,6 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
         session,
         loading,
         error,
-        signInWithGoogle,
         signInWithOtp,
         signOut,
       }}
