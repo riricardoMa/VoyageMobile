@@ -4,9 +4,9 @@ import React, {
   useEffect,
   useState,
   useCallback,
-  PropsWithChildren,
+  type PropsWithChildren,
 } from "react";
-import { supabase, Session } from "./supabase";
+import { supabase, type Session } from "@services/auth/supabase";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -30,13 +30,11 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
       setSession(session);
       setLoading(false);
     });
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      }
-    );
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
     return () => {
-      subscription?.unsubscribe();
+      data.subscription.unsubscribe();
     };
   }, []);
 
