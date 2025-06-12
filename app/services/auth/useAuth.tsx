@@ -14,6 +14,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   signInWithOtp: (email: string) => Promise<void>;
+  verifyOtp: (email: string, token: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -40,7 +41,24 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
   const signInWithOtp = useCallback(async (email: string) => {
     setLoading(true);
     setError(null);
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+      },
+    });
+    if (error) setError(error.message);
+    setLoading(false);
+  }, []);
+
+  const verifyOtp = useCallback(async (email: string, token: string) => {
+    setLoading(true);
+    setError(null);
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: "email",
+    });
     if (error) setError(error.message);
     setLoading(false);
   }, []);
@@ -61,6 +79,7 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
         loading,
         error,
         signInWithOtp,
+        verifyOtp,
         signOut,
       }}
     >
