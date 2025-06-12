@@ -1,5 +1,11 @@
 {
   "expo": {
+    "ios": {
+      "bundleIdentifier": "com.voyage.app"
+    },
+    "android": {
+      "package": "com.voyage.app"
+    },
     "web": {
       "bundler": "metro"
     }
