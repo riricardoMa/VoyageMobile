@@ -1,6 +1,6 @@
 # VoyageMobile
 
-A modern Expo + React Native app using Supabase Auth, TypeScript, and Bun as the runtime and package manager.
+A modern Expo + React Native app using Supabase Auth, TypeScript, and npm as the package manager.
 
 ## Features
 
@@ -8,16 +8,16 @@ A modern Expo + React Native app using Supabase Auth, TypeScript, and Bun as the
 - Secure session storage (MMKV + SecureStore)
 - SOLID-compliant architecture (hooks, context, separation of concerns)
 - TypeScript-first
-- Bun for fast installs and scripts
+- npm for package management
 
 ## Getting Started
 
 1. Install dependencies:
    ```sh
-   bun install
+   npm install
    ```
 2. Set up your `.env` file with your Supabase project URL and anon key.
-3. Run the app with Expo (see Expo docs for Bun integration).
+3. Run the app with Expo.
 
 ## Structure
 

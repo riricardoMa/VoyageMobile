@@ -4,7 +4,6 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.17"
   },
@@ -32,12 +31,14 @@
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "^4.11.1",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-web": "^0.20.0"
+    "react-native-web": "^0.20.0",
+    "expo": "~53.0.11"
   },
   "scripts": {
-    "start": "bunx expo start",
-    "android": "bunx expo run:android",
-    "ios": "bunx expo run:ios",
-    "web": "bunx expo start --web"
-  }
+    "start": "npx expo start",
+    "android": "npx expo run:android",
+    "ios": "npx expo run:ios",
+    "web": "npx expo start --web"
+  },
+  "version": "1.0.0"
 }
