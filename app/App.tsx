@@ -3,7 +3,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthProvider, useAuth } from "./services/auth/useAuth";
 import SignInScreen from "@screens/SignInScreen";
-import WelcomeScreen from "@screens/WelcomeScreen";
+import HomeScreen from "@screens/HomeScreen";
+import LoadingScreen from "@screens/LoadingScreen";
 import "../global.css";
 
 const Stack = createNativeStackNavigator();
@@ -13,7 +14,7 @@ function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isAuthenticated ? (
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="Welcome" component={HomeScreen} />
       ) : (
         <Stack.Screen name="SignIn" component={SignInScreen} />
       )}
