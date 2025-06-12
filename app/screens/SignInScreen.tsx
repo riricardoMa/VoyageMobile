@@ -1,13 +1,8 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { useAuth } from "../services/auth/useAuth";
+import Button from "@components/Button";
+import Input from "@components/Input";
 
 export default function SignInScreen() {
   const { signInWithGoogle, signInWithOtp, loading, error } = useAuth();
@@ -23,67 +18,49 @@ export default function SignInScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
+    <View className="flex-1 justify-center p-6 bg-white">
+      <Text className="text-3xl font-bold mb-6 text-center text-gray-900">
+        Sign In
+      </Text>
+
+      {error ? (
+        <Text className="text-red-500 mb-4 text-center">{error}</Text>
+      ) : null}
+
+      <Input
+        placeholder="Enter your email"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
         editable={!loading}
+        label="Email Address"
       />
+
       <Button
         title={otpSent ? "Resend Magic Link" : "Send Magic Link"}
         onPress={handleSendOtp}
         disabled={loading || !email}
+        loading={loading}
+        variant="primary"
+        size="lg"
       />
-      <View style={styles.divider} />
+
+      <View className="h-4" />
+
       <Button
         title="Sign in with Google"
         onPress={signInWithGoogle}
         disabled={loading}
+        variant="secondary"
+        size="lg"
       />
-      {loading && <ActivityIndicator style={{ marginTop: 16 }} />}
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+
+      {message ? (
+        <Text className="text-green-600 mt-4 text-center font-medium">
+          {message}
+        </Text>
+      ) : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 24,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 12,
-    marginBottom: 12,
-    fontSize: 16,
-  },
-  divider: {
-    height: 24,
-  },
-  error: {
-    color: "red",
-    marginBottom: 12,
-    textAlign: "center",
-  },
-  message: {
-    color: "green",
-    marginTop: 16,
-    textAlign: "center",
-  },
-});
