@@ -36,10 +36,15 @@
     "react-native-web": "^0.20.0"
   },
   "scripts": {
-    "start": "npx expo start",
-    "android": "npx expo run:android",
-    "ios": "npx expo run:ios",
-    "web": "npx expo start --web"
+    "start": "bunx expo start",
+    "dev": "bunx expo start --clear",
+    "android": "bunx expo run:android",
+    "ios": "bunx expo run:ios",
+    "web": "bunx expo start --web",
+    "install": "bun install",
+    "clean": "bun run clean:cache && bun run clean:deps",
+    "clean:cache": "bunx expo start --clear",
+    "clean:deps": "rm -rf node_modules && bun install"
   },
   "version": "1.0.0"
 }
