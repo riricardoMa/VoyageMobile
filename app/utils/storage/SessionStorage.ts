@@ -5,7 +5,7 @@ import * as Crypto from "expo-crypto";
 const ENCRYPTION_KEY = "session-encryption-key";
 
 function fetchOrGenerateEncryptionKey(): string {
-  let encryptionKey = SecureStore.getItem(ENCRYPTION_KEY) as string | null;
+  const encryptionKey = SecureStore.getItem(ENCRYPTION_KEY) as string | null;
   if (encryptionKey) {
     return encryptionKey;
   } else {

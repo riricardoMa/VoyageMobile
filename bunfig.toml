@@ -1,12 +1,8 @@
 # Bun configuration for React Native/Expo project
 
 [install]
-# Use the fastest installation method
-auto = "force"
 cache = true
 frozen = false
-# Prefer exact versions for React Native stability
-exact = false
 
 # React Native specific optimizations
 [install.scopes]

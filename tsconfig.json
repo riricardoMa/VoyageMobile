@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "lib": ["esnext", "dom"],
     "target": "esnext",
     "module": "esnext",
     "moduleDetection": "force",
@@ -26,24 +23,12 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@app/*": [
-        "app/*"
-      ],
-      "@services/*": [
-        "app/services/*"
-      ],
-      "@utils/*": [
-        "app/utils/*"
-      ],
-      "@screens/*": [
-        "app/screens/*"
-      ]
+      "@app/*": ["app/*"],
+      "@services/*": ["app/services/*"],
+      "@utils/*": ["app/utils/*"],
+      "@screens/*": ["app/screens/*"]
     }
   },
-  "include": [
-    "index.ts",
-    "app",
-    "nativewind-env.d.ts"
-  ],
+  "include": ["index.ts", "app", "nativewind-env.d.ts"],
   "extends": "expo/tsconfig.base"
 }

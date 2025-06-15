@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Expo
+.expo/
+.expo-shared/
+
+# Native builds
+ios/
+android/
+web-build/
+
+# Build outputs
+dist/
+build/
+out/
+
+# Config files
+*.config.js
+*.config.cjs
+metro.config.cjs
+babel.config.cjs
+tailwind.config.js
+
+# Generated files
+.DS_Store
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Lockfiles
+package-lock.json
+yarn.lock
+bun.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db 
