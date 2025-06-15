@@ -69,13 +69,22 @@ module.exports = {
     complexity: ["warn", { max: 10 }], // Single Responsibility
     "max-params": ["warn", { max: 4 }], // Interface Segregation
 
-    // Prettier integration
+    // Prettier integration - must match .prettierrc.cjs exactly
     "prettier/prettier": [
       "error",
       {
-        endOfLine: "auto",
+        semi: true,
         singleQuote: false,
         jsxSingleQuote: false,
+        quoteProps: "as-needed",
+        trailingComma: "es5",
+        tabWidth: 2,
+        useTabs: false,
+        printWidth: 80,
+        endOfLine: "auto",
+        arrowParens: "avoid",
+        bracketSpacing: true,
+        embeddedLanguageFormatting: "auto",
       },
     ],
   },

@@ -1,7 +1,7 @@
 module.exports = {
   // Basic formatting options
   semi: true,
-  singleQuote: false,
+  singleQuote: false, // Always use double quotes for strings
   quoteProps: "as-needed",
   trailingComma: "es5",
   tabWidth: 2,
@@ -9,7 +9,7 @@ module.exports = {
   printWidth: 80,
 
   // JSX specific options
-  jsxSingleQuote: false,
+  jsxSingleQuote: false, // Always use double quotes in JSX
 
   // Line endings
   endOfLine: "lf",
@@ -32,6 +32,13 @@ module.exports = {
       options: {
         printWidth: 100,
         proseWrap: "always",
+      },
+    },
+    {
+      files: ["*.js", "*.jsx", "*.ts", "*.tsx"],
+      options: {
+        singleQuote: false, // Explicitly enforce double quotes for all JS/TS files
+        jsxSingleQuote: false, // Explicitly enforce double quotes for all JSX
       },
     },
   ],

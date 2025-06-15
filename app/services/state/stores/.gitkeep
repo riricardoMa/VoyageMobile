@@ -1,0 +1,2 @@
+# Store implementations will go here
+# Following Single Responsibility Principle - each store handles one concern 

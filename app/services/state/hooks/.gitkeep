@@ -1,0 +1,2 @@
+# Custom hook wrappers will go here
+# Following Dependency Inversion Principle - components use hooks, not direct store access 
