@@ -1,0 +1,194 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# VoyageMobile - React Native + Expo Mobile Application
+
+## Project Overview
+VoyageMobile is a React Native + Expo mobile application built with TypeScript, following SOLID principles and using bun as the JavaScript runtime. The project emphasizes type safety, clean architecture, and modern mobile development practices.
+
+## Core Technologies & Dependencies
+- **Runtime**: Bun (JavaScript runtime)
+- **Framework**: React Native with Expo SDK ~53.0.11
+- **Language**: TypeScript with strict configuration
+- **UI Framework**: NativeWind (Tailwind CSS for React Native)
+- **Navigation**: React Navigation v7 (Stack, Bottom Tabs, Native Stack)
+- **State Management**: React hooks and async storage
+- **Backend**: Supabase integration
+- **Storage**: React Native MMKV for fast storage, AsyncStorage for compatibility
+
+## SOLID Principles Implementation
+
+### Single Responsibility Principle (SRP)
+- Each component, service, and utility has one clear responsibility
+- Screens handle only UI logic and delegate business logic to services
+- Services handle only business logic and data operations
+- Utils handle only pure functions and helpers
+
+### Open/Closed Principle (OCP)
+- Components are open for extension through props and composition
+- Services use interface-based design for extensibility
+- New features extend existing functionality without modification
+
+### Liskov Substitution Principle (LSP)
+- All service implementations must be interchangeable
+- Components accept interface types, not concrete implementations
+- Consistent return types and behavior across similar functions
+
+### Interface Segregation Principle (ISP)
+- Services expose only necessary methods to consumers
+- Components receive only the props they need
+- Type definitions are specific and minimal
+
+### Dependency Inversion Principle (DIP)
+- High-level components depend on abstractions (services)
+- Business logic is abstracted from UI components
+- External dependencies are injected, not directly imported
+
+## Project Structure
+```
+├── [index.ts](mdc:index.ts)                    # App entry point
+├── [app.json](mdc:app.json)                    # Expo configuration
+├── [package.json](mdc:package.json)            # Dependencies and scripts
+├── [tsconfig.json](mdc:tsconfig.json)          # TypeScript configuration
+├── [bunfig.toml](mdc:bunfig.toml)             # Bun configuration
+├── [tailwind.config.js](mdc:tailwind.config.js) # Tailwind configuration
+├── [global.css](mdc:global.css)               # Global styles
+├── app/
+│   ├── [App.tsx](mdc:app/App.tsx)             # Main app component
+│   ├── screens/                               # Screen components (UI only)
+│   ├── services/                              # Business logic & API calls
+│   └── utils/                                 # Pure utility functions
+├── ios/                                       # iOS platform files
+└── .expo/                                     # Expo build artifacts
+```
+
+## Development Standards
+
+### TypeScript Configuration
+- Strict mode enabled for maximum type safety
+- Path aliases configured for clean imports:
+  - `@app/*` → `app/*`
+  - `@services/*` → `app/services/*`
+  - `@utils/*` → `app/utils/*`
+  - `@screens/*` → `app/screens/*`
+- ESNext target with modern module resolution
+
+### Component Guidelines
+```typescript
+// Good: Single responsibility, typed props
+interface UserProfileProps {
+  userId: string;
+  onUpdate: (user: User) => void;
+}
+
+export const UserProfile: React.FC<UserProfileProps> = ({ userId, onUpdate }) => {
+  // UI logic only, delegate business logic to services
+};
+```
+
+### Service Layer Architecture
+```typescript
+// Good: Interface-based service design
+interface UserService {
+  getUser(id: string): Promise<User>;
+  updateUser(user: Partial<User>): Promise<User>;
+}
+
+export class SupabaseUserService implements UserService {
+  // Implementation details
+}
+```
+
+### Styling with NativeWind
+- Use Tailwind utility classes for consistent styling
+- Responsive design principles for different screen sizes
+- Platform-specific styles when necessary
+
+## Bun Runtime Standards
+
+### Package Management
+```bash
+# Use bun for all package operations
+bun install                    # Install dependencies
+bun add <package>             # Add dependencies
+bun remove <package>          # Remove dependencies
+```
+
+### Script Execution
+```bash
+# Development commands
+bun run start                 # Start Expo development server
+bun run dev                   # Start with cache cleared
+bun run android              # Run on Android
+bun run ios                  # Run on iOS
+bun run web                  # Run on web
+```
+
+### Performance Benefits
+- Faster installation and startup times
+- Better TypeScript integration
+- Native ESM support
+
+## Code Quality Standards
+
+### Naming Conventions
+- **Components**: PascalCase (`UserProfile.tsx`)
+- **Services**: PascalCase with Service suffix (`UserService.ts`)
+- **Utils**: camelCase (`formatDate.ts`)
+- **Constants**: SCREAMING_SNAKE_CASE (`API_ENDPOINTS`)
+- **Interfaces**: PascalCase with descriptive names (`UserData`, `ApiResponse`)
+
+### File Organization
+```
+app/
+├── screens/
+│   ├── auth/
+│   │   ├── LoginScreen.tsx
+│   │   └── RegisterScreen.tsx
+│   └── profile/
+│       └── ProfileScreen.tsx
+├── services/
+│   ├── auth/
+│   │   └── AuthService.ts
+│   └── user/
+│       └── UserService.ts
+└── utils/
+    ├── validation/
+    │   └── validators.ts
+    └── formatting/
+        └── dateUtils.ts
+```
+
+### Error Handling
+- Use try-catch blocks for async operations
+- Implement proper error boundaries
+- Provide meaningful error messages
+- Log errors appropriately for debugging
+
+### Performance Guidelines
+- Use React.memo() for expensive components
+- Implement proper list optimization with FlatList
+- Lazy load screens and heavy components
+- Optimize images and assets
+
+## Testing Standards
+- Unit tests for services and utilities
+- Component testing with React Native Testing Library
+- Integration tests for critical user flows
+- E2E testing with Detox (when applicable)
+
+## Security Considerations
+- Secure storage for sensitive data using Expo SecureStore
+- Proper authentication flow implementation
+- API key and secret management
+- Input validation and sanitization
+
+## Expo Integration
+- Follow Expo managed workflow best practices
+- Use Expo SDK modules when available
+- Proper configuration in [app.json](mdc:app.json)
+- Platform-specific builds when necessary
+
+Remember: Always follow SOLID principles, maintain type safety, and leverage bun's performance benefits throughout development.
