@@ -234,6 +234,7 @@ export class SupabaseUploadService implements IUploadService {
       return {
         success: true,
         fileId: file.id,
+        filePath: fileName,
         publicUrl: urlData.publicUrl,
         thumbnailUrl,
       };

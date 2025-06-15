@@ -31,6 +31,7 @@ export interface UploadOptions {
 export interface UploadResult {
   success: boolean;
   fileId: string;
+  filePath?: string; // Supabase storage path for backend retrieval
   publicUrl?: string;
   thumbnailUrl?: string;
   error?: string;
