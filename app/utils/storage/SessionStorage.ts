@@ -31,11 +31,15 @@ export async function getItem(key: string): Promise<string | null> {
 export async function setItem(key: string, value: string): Promise<void> {
   try {
     storage.set(key, value);
-  } catch {}
+  } catch (error) {
+    console.warn("Failed to set item in session storage:", error);
+  }
 }
 
 export async function removeItem(key: string): Promise<void> {
   try {
     storage.delete(key);
-  } catch {}
+  } catch (error) {
+    console.warn("Failed to remove item from session storage:", error);
+  }
 }
