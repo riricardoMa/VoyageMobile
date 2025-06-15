@@ -112,5 +112,6 @@ module.exports = {
     "build/",
     "*.config.js",
     "*.config.cjs",
+    "node_modules/**/tsconfig.json", // Explicitly ignore tsconfig.json files in node_modules
   ],
 };

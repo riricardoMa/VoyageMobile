@@ -27,6 +27,7 @@ tailwind.config.js
 # Generated files
 .DS_Store
 *.tsbuildinfo
+node_modules/**/tsconfig.json
 
 # Logs
 *.log
