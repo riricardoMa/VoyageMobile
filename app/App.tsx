@@ -2,6 +2,7 @@ import "../global.css";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { TouchableOpacity } from "react-native";
 import { AuthProvider, useAuth } from "./services/auth/useAuth";
 import { UploadProvider } from "./services/upload";
 import { I18nProvider } from "./services/i18n";
@@ -18,6 +19,7 @@ import type {
   AppStackParamList,
 } from "@app/types/navigation";
 import { AuthWelcomeScreen } from "./screens/auth/AuthWelcomeScreen";
+import { ArrowLeft, Close } from "./components/svg";
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
@@ -50,17 +52,37 @@ function AuthStackNavigator() {
         name="EmailInput"
         component={EmailInputScreen}
         initialParams={{ isSignUp: true }}
-        options={({ route }) => ({
-          title: route.params?.isSignUp ? "Sign Up" : "Sign In",
+        options={({ route, navigation }) => ({
+          title: route.params?.isSignUp ? "Sign up" : "Log in",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("AuthWelcome")}
+              className="p-2"
+            >
+              <Close />
+            </TouchableOpacity>
+          ),
         })}
       />
       <AuthStack.Screen
         name="OTPVerification"
         component={OTPVerificationScreen}
-        options={({ route }) => ({
+        options={({ route, navigation }) => ({
           title: route.params?.isSignUp
             ? "Verify Your Email"
             : "Enter Verification Code",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("EmailInput", {
+                  isSignUp: route.params?.isSignUp,
+                })
+              }
+              className="p-2"
+            >
+              <ArrowLeft />
+            </TouchableOpacity>
+          ),
         })}
       />
     </AuthStack.Navigator>
