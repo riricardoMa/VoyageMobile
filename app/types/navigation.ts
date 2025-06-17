@@ -2,6 +2,7 @@
 
 // Auth Stack - screens shown when user is NOT authenticated
 export type AuthStackParamList = {
+  AuthWelcome: undefined;
   EmailInput: { isSignUp?: boolean };
   OTPVerification: { email: string; isSignUp?: boolean };
 };

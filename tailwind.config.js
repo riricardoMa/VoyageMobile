@@ -24,6 +24,7 @@ module.exports = {
         accent: '#e1d6ca',            // Fuschia Dust Storm
         background: '#f1e5da',        // Iris parchment
         surface: '#e3d1c6',           // Iris Bone
+        'auth-background': '#f3f0eb', // Auth welcome screen background (243, 240, 235)
       },
     },
   },
