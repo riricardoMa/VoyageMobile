@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useAuth } from "../services/auth/useAuth";
 
-export default function SignInScreen() {
+export default function SignInScreenProofOfConcept() {
   const { signInWithOtp, verifyOtp, loading, error } = useAuth();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
