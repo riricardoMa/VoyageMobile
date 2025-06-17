@@ -26,7 +26,8 @@
       "@app/*": ["app/*"],
       "@services/*": ["app/services/*"],
       "@utils/*": ["app/utils/*"],
-      "@screens/*": ["app/screens/*"]
+      "@screens/*": ["app/screens/*"],
+      "@state/*": ["app/state/*"]
     }
   },
   "include": ["index.ts", "app", "nativewind-env.d.ts"],
