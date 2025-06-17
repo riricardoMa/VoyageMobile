@@ -1,0 +1,91 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Color System Guidelines
+
+## Overview
+VoyageMobile uses a carefully curated color palette defined in [tailwind.config.js](mdc:tailwind.config.js). All components and screens MUST use only these predefined colors to maintain visual consistency and brand identity.
+
+## Approved Color Palette
+
+### Brand Colors (Fuschia Palette)
+- **fuschia-rodeo-dust** (`#c3b39d`) - Primary brand color
+- **fuschia-vanilla** (`#d5c8b8`) - Secondary brand color  
+- **fuschia-dust-storm** (`#e1d6ca`) - Tertiary brand color
+
+### Supporting Colors (Iris Palette)
+- **iris-parchment** (`#f1e5da`) - Light background color
+- **iris-bone** (`#e3d1c6`) - Surface color
+
+### Semantic Color Aliases
+Use these semantic names for better maintainability:
+- **primary** → fuschia-rodeo-dust
+- **secondary** → fuschia-vanilla
+- **accent** → fuschia-dust-storm
+- **background** → iris-parchment
+- **surface** → iris-bone
+
+## Usage Rules
+
+### ✅ Correct Usage
+```tsx
+// Use Tailwind color classes
+<View className="bg-primary border-secondary" />
+<Text className="text-accent" />
+
+// Use semantic names for clarity
+<View className="bg-background" />
+<Text className="text-primary" />
+
+// Use full palette names when specific
+<TouchableOpacity className="bg-fuschia-vanilla" />
+```
+
+### ❌ Incorrect Usage
+```tsx
+// Never use arbitrary color values
+<View style={{ backgroundColor: '#ff0000' }} />
+<Text style={{ color: 'red' }} />
+
+// Never use standard Tailwind colors not in our palette
+<View className="bg-blue-500 text-red-600" />
+
+// Never use CSS color names
+<Text style={{ color: 'blue' }} />
+```
+
+## Implementation Guidelines
+
+### For React Native Components
+- Use NativeWind classes with approved color names
+- Prefer semantic color names (primary, secondary, etc.) over specific palette names
+- Always reference colors from the [tailwind.config.js](mdc:tailwind.config.js) configuration
+
+### For Style Objects (When Necessary)
+If you must use style objects instead of classes, reference the exact hex values from [tailwind.config.js](mdc:tailwind.config.js):
+```tsx
+const styles = {
+  container: {
+    backgroundColor: '#f1e5da', // iris-parchment/background
+  }
+};
+```
+
+### Color Accessibility
+- Ensure sufficient contrast ratios between text and background colors
+- Test color combinations with the approved palette
+- Primary text should typically use darker colors on lighter backgrounds
+
+## Enforcement
+- All new components must use only approved colors
+- Code reviews should verify color usage compliance
+- Consider adding ESLint rules to catch unauthorized color usage
+- Update this rule if new colors are added to [tailwind.config.js](mdc:tailwind.config.js)
+
+## Adding New Colors
+New colors can only be added by:
+1. Updating [tailwind.config.js](mdc:tailwind.config.js) first
+2. Updating this rule to reflect the changes
+3. Getting design team approval for brand consistency
