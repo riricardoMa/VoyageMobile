@@ -21,8 +21,7 @@ type OTPVerificationScreenRouteProp = RouteProp<
 export const OTPVerificationScreen: React.FC = () => {
   const navigation = useNavigation<OTPVerificationScreenNavigationProp>();
   const route = useRoute<OTPVerificationScreenRouteProp>();
-  const { verifyOtp, signInWithOtp, loading, error, isAuthenticated } =
-    useAuth();
+  const { verifyOtp, signInWithOtp, loading, error } = useAuth();
 
   const { email, isSignUp = true } = route.params;
 
