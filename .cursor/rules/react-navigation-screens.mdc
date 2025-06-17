@@ -1,0 +1,253 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# React Navigation Screen Management Guidelines
+
+## Overview
+VoyageMobile uses React Navigation v7 with a conditional authentication flow pattern. All screen management follows strict patterns for type safety, proper navigation, and clean architecture.
+
+## Navigation Architecture
+
+### Navigation Structure
+The app uses a three-tier navigation structure defined in [app/App.tsx](mdc:app/App.tsx):
+
+```
+RootStackNavigator (Conditional)
+├── SplashScreen (isLoading: true)
+├── AuthStackNavigator (isAuthenticated: false)
+│   ├── EmailInputScreen
+│   └── OTPVerificationScreen
+└── AppStackNavigator (isAuthenticated: true)
+    ├── WelcomeScreen
+    └── MediaUploadScreen
+    └── [Your new screens here]
+```
+
+### Navigation Types
+All navigation parameter types are centrally defined in [app/types/navigation.ts](mdc:app/types/navigation.ts). This file contains:
+- `AuthStackParamList` - Screens shown when NOT authenticated
+- `AppStackParamList` - Screens shown when authenticated  
+- `RootStackParamList` - Top-level navigation structure
+
+## Adding New Screens
+
+### Step 1: Update Navigation Types
+First, add your screen to the appropriate stack in [app/types/navigation.ts](mdc:app/types/navigation.ts):
+
+```typescript
+// For authenticated users
+export type AppStackParamList = {
+  Welcome: undefined;
+  MediaUpload: undefined;
+  UserProfile: { userId: string }; // ← Add your screen here
+  Settings: undefined;
+};
+
+// For non-authenticated users  
+export type AuthStackParamList = {
+  EmailInput: { isSignUp?: boolean };
+  OTPVerification: { email: string; isSignUp?: boolean };
+  ForgotPassword: { email?: string }; // ← Add your screen here
+};
+```
+
+### Step 2: Create Screen Component
+Create your screen component following the established patterns:
+
+```typescript
+// app/screens/UserProfileScreen.tsx
+import React from "react";
+import { View, Text, SafeAreaView } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import type { RouteProp } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { AppStackParamList } from "@app/types/navigation";
+import { Button } from "@app/components/ui";
+
+type UserProfileScreenNavigationProp = NativeStackNavigationProp<
+  AppStackParamList,
+  "UserProfile"
+>;
+
+type UserProfileScreenRouteProp = RouteProp<
+  AppStackParamList,
+  "UserProfile"
+>;
+
+export const UserProfileScreen: React.FC = () => {
+  const navigation = useNavigation<UserProfileScreenNavigationProp>();
+  const route = useRoute<UserProfileScreenRouteProp>();
+  
+  const { userId } = route.params;
+  
+  return (
+    <SafeAreaView className="flex-1 bg-background">
+      {/* Your screen content */}
+    </SafeAreaView>
+  );
+};
+```
+
+### Step 3: Register Screen in Navigator
+Add the screen to the appropriate navigator in [app/App.tsx](mdc:app/App.tsx):
+
+```typescript
+// For authenticated screens
+function AppStackNavigator() {
+  return (
+    <AppStack.Navigator screenOptions={{ headerShown: false }}>
+      <AppStack.Screen name="Welcome" component={WelcomeScreen} />
+      <AppStack.Screen name="MediaUpload" component={MediaUploadScreen} />
+      <AppStack.Screen name="UserProfile" component={UserProfileScreen} />
+    </AppStack.Navigator>
+  );
+}
+```
+
+### Step 4: Update Exports
+Add your screen to the appropriate index file:
+
+```typescript
+// app/screens/index.ts
+export { UserProfileScreen } from "./UserProfileScreen";
+export { SettingsScreen } from "./SettingsScreen";
+```
+
+## Screen Component Standards
+
+### Required Patterns
+✅ **Use TypeScript**: All screens must be fully typed
+✅ **Use SafeAreaView**: Wrap content in SafeAreaView with `bg-background`
+✅ **Import Navigation Types**: From `@app/types/navigation`
+✅ **Use NativeWind**: Follow the color system guidelines
+✅ **Error Handling**: Implement proper loading and error states
+✅ **Named Exports**: Always use named exports, not default exports
+
+### Component Structure Template
+```typescript
+import React from "react";
+import { View, Text, SafeAreaView } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import type { RouteProp } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { AppStackParamList } from "@app/types/navigation";
+import { Button, LoadingSpinner } from "@app/components/ui";
+
+// Type definitions
+type ScreenNavigationProp = NativeStackNavigationProp<AppStackParamList, "ScreenName">;
+type ScreenRouteProp = RouteProp<AppStackParamList, "ScreenName">;
+
+export const YourScreen: React.FC = () => {
+  const navigation = useNavigation<ScreenNavigationProp>();
+  const route = useRoute<ScreenRouteProp>();
+  
+  // Extract params if any
+  const { param1, param2 } = route.params || {};
+  
+  return (
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="flex-1 px-6">
+        {/* Your content here */}
+      </View>
+    </SafeAreaView>
+  );
+};
+```
+
+## Navigation Patterns
+
+### Navigation Between Screens
+```typescript
+// Navigate with parameters
+navigation.navigate("UserProfile", { userId: "123" });
+
+// Navigate and replace current screen
+navigation.replace("Settings");
+
+// Go back
+navigation.goBack();
+
+// Navigate to tab or nested navigator
+navigation.navigate("TabNavigator", { screen: "Profile" });
+```
+
+### Conditional Navigation
+Never manually navigate when authentication state changes. The auth pattern in [app/services/auth/useAuth.tsx](mdc:app/services/auth/useAuth.tsx) handles this automatically:
+
+```typescript
+// ❌ DON'T do this
+if (isAuthenticated) {
+  navigation.navigate("Welcome");
+}
+
+// ✅ DO this - let React Navigation handle it automatically
+// The conditional rendering in App.tsx will handle navigation
+```
+
+## Authentication Considerations
+
+### Protected Screens
+Screens in `AppStackNavigator` are automatically protected - they only render when `isAuthenticated: true`.
+
+### Auth-Related Screens  
+Screens in `AuthStackNavigator` only render when `isAuthenticated: false`.
+
+### Shared Screens
+If you need screens accessible in both auth states, use `navigationKey` to remove them when auth state changes:
+
+```typescript
+<Stack.Screen
+  navigationKey={isAuthenticated ? 'user' : 'guest'}
+  name="Help"
+  component={HelpScreen}
+/>
+```
+
+## Best Practices
+
+### DO ✅
+- Always update [app/types/navigation.ts](mdc:app/types/navigation.ts) first
+- Use proper TypeScript types for all navigation
+- Follow the color system from [tailwind.config.js](mdc:tailwind.config.js)
+- Use components from [app/components/ui](mdc:app/components/ui)
+- Handle loading and error states
+- Use `SafeAreaView` with proper background colors
+- Export screens with named exports
+
+### DON'T ❌
+- Use manual navigation for auth state changes
+- Create navigation types inline in components
+- Use default exports for screen components
+- Navigate manually in authentication flows
+- Use arbitrary colors outside the approved palette
+- Skip TypeScript types for navigation parameters
+- Forget to handle loading/error states
+
+## Testing Navigation
+
+### Type Safety Verification
+Run type checking before committing:
+```bash
+bun run type-check
+```
+
+### Navigation Testing Checklist
+- [ ] Screen navigates correctly with parameters
+- [ ] Back navigation works properly
+- [ ] Authentication state transitions work
+- [ ] Loading states display correctly
+- [ ] Error states are handled
+- [ ] TypeScript compilation passes
+- [ ] Follows color system guidelines
+
+## Examples Reference
+
+- **Auth Screen**: [app/screens/auth/EmailInputScreen.tsx](mdc:app/screens/auth/EmailInputScreen.tsx)
+- **App Screen**: [app/screens/WelcomeScreen.tsx](mdc:app/screens/WelcomeScreen.tsx)
+- **Navigation Types**: [app/types/navigation.ts](mdc:app/types/navigation.ts)
+- **Auth Context**: [app/services/auth/useAuth.tsx](mdc:app/services/auth/useAuth.tsx)
+- **Main Navigation**: [app/App.tsx](mdc:app/App.tsx)
+
+Following these patterns ensures consistent, type-safe, and maintainable screen management throughout the VoyageMobile application.
