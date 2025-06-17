@@ -30,9 +30,9 @@ function AuthStackNavigator() {
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: "#f1e5da", // iris-parchment (background color)
+          backgroundColor: "#FAFAFA",
         },
-        headerTintColor: "#C6B29A", // fuschia-rodeo-dust (primary color)
+        headerTintColor: "#0F141A",
         headerTitleStyle: {
           fontWeight: "bold",
           fontSize: 18,
@@ -51,7 +51,7 @@ function AuthStackNavigator() {
         component={EmailInputScreen}
         initialParams={{ isSignUp: true }}
         options={({ route }) => ({
-          title: route.params?.isSignUp ? "Create Account" : "Sign In",
+          title: route.params?.isSignUp ? "Sign Up" : "Sign In",
         })}
       />
       <AuthStack.Screen
