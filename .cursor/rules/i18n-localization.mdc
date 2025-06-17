@@ -1,0 +1,107 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# VoyageMobile i18n Localization Guide
+
+## Service Architecture
+
+VoyageMobile implements internationalization following SOLID principles with a dedicated service layer:
+
+- **Core Service**: [app/services/i18n/I18nService.ts](mdc:app/services/i18n/I18nService.ts) - Singleton service using i18next
+- **React Hook**: [app/services/i18n/useI18n.tsx](mdc:app/services/i18n/useI18n.tsx) - Context provider and hook for components
+- **Clean Exports**: [app/services/i18n/index.ts](mdc:app/services/i18n/index.ts) - Centralized exports following project patterns
+
+## Supported Languages
+
+The app supports three languages with smart device detection:
+- **English** (`en`) - Default fallback language
+- **Simplified Chinese** (`zh-CN`) - For China, Singapore regions  
+- **Traditional Chinese** (`zh-TW`) - For Taiwan, Hong Kong, Macau regions
+
+## Translation Files Structure
+
+Translation files are located in `app/services/i18n/locales/`:
+- [app/services/i18n/locales/en.json](mdc:app/services/i18n/locales/en.json)
+- [app/services/i18n/locales/zh-CN.json](mdc:app/services/i18n/locales/zh-CN.json)  
+- [app/services/i18n/locales/zh-TW.json](mdc:app/services/i18n/locales/zh-TW.json)
+
+## Usage in Components
+
+### 1. Import the Hook
+```typescript
+import { useI18n } from "@services/i18n";
+```
+
+### 2. Use in Component
+```typescript
+const { t, currentLanguage, changeLanguage } = useI18n();
+
+// Translate text
+<Text>{t("welcome.title")}</Text>
+
+// Change language programmatically  
+await changeLanguage("zh-CN");
+```
+
+### 3. Provider Integration
+The i18n provider is integrated in [app/App.tsx](mdc:app/App.tsx) at the root level, wrapping all other providers.
+
+## Adding New Translations
+
+1. **Add keys to translation files**:
+```json
+// en.json
+{
+  "welcome": {
+    "title": "Welcome to VoyageMobile",
+    "subtitle": "Your journey begins here"
+  }
+}
+
+// zh-CN.json  
+{
+  "welcome": {
+    "title": "欢迎使用VoyageMobile",
+    "subtitle": "您的旅程从这里开始"
+  }
+}
+```
+
+2. **Use in components**:
+```typescript
+const { t } = useI18n();
+return (
+  <View>
+    <Text>{t("welcome.title")}</Text>
+    <Text>{t("welcome.subtitle")}</Text>
+  </View>
+);
+```
+
+## Key Features
+
+- **Automatic Detection**: Uses device locale with fallback to English
+- **Persistent Storage**: Saves user language preference via AsyncStorage
+- **Singleton Pattern**: Single service instance following DIP principle
+- **Type Safety**: Full TypeScript support with proper interfaces
+- **Error Handling**: Graceful fallbacks if initialization fails
+
+## Service Interface
+
+The service implements `I18nServiceInterface` providing:
+- `initialize()` - Setup with device/saved language detection
+- `t(key, options?)` - Translation function with interpolation support
+- `getCurrentLanguage()` - Get current active language code
+- `changeLanguage(code)` - Switch language with persistence
+- `getSupportedLanguages()` - List all supported language codes
+- `getLanguageDisplayName(code)` - Get display name for language
+
+## Best Practices
+
+1. **Namespace translations** using nested objects for organization
+2. **Use interpolation** for dynamic values: `t("welcome.user", { name: "John" })`
+3. **Check `isInitialized`** before rendering content that requires translations
+4. **Handle errors** when changing languages programmatically
+5. **Follow existing service patterns** when extending functionality
