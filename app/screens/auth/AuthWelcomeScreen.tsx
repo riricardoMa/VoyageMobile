@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "@app/types/navigation";
-import { Iconify } from "react-native-iconify";
+import { PrimaryButton } from "@app/components/ui";
 
 type AuthWelcomeScreenProps = NativeStackScreenProps<
   AuthStackParamList,
@@ -41,15 +41,11 @@ export const AuthWelcomeScreen: React.FC<AuthWelcomeScreenProps> = ({
       {/* Sign Up Buttons */}
       <View className="mt-10 w-full space-y-4">
         {/* Sign Up with Email - Primary CTA */}
-        <TouchableOpacity
+        <PrimaryButton
+          title="Sign Up with Email"
+          icon="ic:outline-email"
           onPress={handleSignUpWithEmail}
-          className="flex-row items-center justify-center rounded-full bg-fuschia-rodeo-dust px-6 py-4"
-        >
-          <Iconify icon="ic:outline-email" size={24} color="white" />
-          <Text className="ml-2 text-lg font-medium text-white">
-            Sign Up with Email
-          </Text>
-        </TouchableOpacity>
+        />
       </View>
 
       {/* Login Link */}
