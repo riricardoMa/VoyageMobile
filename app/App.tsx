@@ -17,6 +17,7 @@ import type {
   AuthStackParamList,
   AppStackParamList,
 } from "@app/types/navigation";
+import { AuthWelcomeScreen } from "./screens/auth/AuthWelcomeScreen";
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
@@ -32,6 +33,7 @@ function AuthStackNavigator() {
         animation: "slide_from_right",
       }}
     >
+      <AuthStack.Screen name="AuthWelcome" component={AuthWelcomeScreen} />
       <AuthStack.Screen
         name="EmailInput"
         component={EmailInputScreen}
