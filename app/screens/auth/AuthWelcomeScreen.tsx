@@ -16,16 +16,6 @@ export const AuthWelcomeScreen: React.FC<AuthWelcomeScreenProps> = ({
     navigation.navigate("EmailInput", { isSignUp: true });
   };
 
-  const handleSignUpWithGoogle = () => {
-    // TODO: Implement Google sign up
-    console.log("Sign up with Google");
-  };
-
-  const handleSignUpWithApple = () => {
-    // TODO: Implement Apple sign up
-    console.log("Sign up with Apple");
-  };
-
   const handleLogin = () => {
     navigation.navigate("EmailInput", { isSignUp: false });
   };
@@ -53,28 +43,6 @@ export const AuthWelcomeScreen: React.FC<AuthWelcomeScreenProps> = ({
         >
           <Text className="ml-2 text-lg font-medium text-white">
             Sign Up with Email
-          </Text>
-        </TouchableOpacity>
-
-        {/* Sign Up with Google */}
-        <TouchableOpacity
-          onPress={handleSignUpWithGoogle}
-          className="flex-row items-center justify-center rounded-full border border-gray-300 bg-white px-6 py-4"
-        >
-          <View className="mr-3 h-5 w-5 rounded-full bg-red-500" />
-          <Text className="text-lg font-medium text-gray-700">
-            Sign Up with Google
-          </Text>
-        </TouchableOpacity>
-
-        {/* Sign Up with Apple */}
-        <TouchableOpacity
-          onPress={handleSignUpWithApple}
-          className="flex-row items-center justify-center rounded-full border border-gray-300 bg-white px-6 py-4"
-        >
-          <View className="mr-3 h-5 w-5 rounded bg-black" />
-          <Text className="text-lg font-medium text-gray-700">
-            Sign Up with Apple
           </Text>
         </TouchableOpacity>
       </View>
