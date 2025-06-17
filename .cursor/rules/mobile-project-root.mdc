@@ -14,7 +14,7 @@ VoyageMobile is a React Native + Expo mobile application built with TypeScript, 
 - **Language**: TypeScript with strict configuration
 - **UI Framework**: NativeWind (Tailwind CSS for React Native)
 - **Navigation**: React Navigation v7 (Stack, Bottom Tabs, Native Stack)
-- **State Management**: React hooks and async storage
+- **State Management**: Custom state management with React hooks and MMKV storage
 - **Backend**: Supabase integration
 - **Storage**: React Native MMKV for fast storage, AsyncStorage for compatibility
 
@@ -24,26 +24,31 @@ VoyageMobile is a React Native + Expo mobile application built with TypeScript, 
 - Each component, service, and utility has one clear responsibility
 - Screens handle only UI logic and delegate business logic to services
 - Services handle only business logic and data operations
+- State management handles application-wide state concerns
 - Utils handle only pure functions and helpers
 
 ### Open/Closed Principle (OCP)
 - Components are open for extension through props and composition
 - Services use interface-based design for extensibility
+- State stores follow consistent interfaces for extensibility
 - New features extend existing functionality without modification
 
 ### Liskov Substitution Principle (LSP)
 - All service implementations must be interchangeable
+- State stores follow consistent base interfaces
 - Components accept interface types, not concrete implementations
 - Consistent return types and behavior across similar functions
 
 ### Interface Segregation Principle (ISP)
 - Services expose only necessary methods to consumers
+- State stores expose only relevant state and actions
 - Components receive only the props they need
 - Type definitions are specific and minimal
 
 ### Dependency Inversion Principle (DIP)
-- High-level components depend on abstractions (services)
+- High-level components depend on abstractions (services, state)
 - Business logic is abstracted from UI components
+- State management abstracts storage implementations
 - External dependencies are injected, not directly imported
 
 ## Project Structure
@@ -59,6 +64,7 @@ VoyageMobile is a React Native + Expo mobile application built with TypeScript, 
 │   ├── [App.tsx](mdc:app/App.tsx)             # Main app component
 │   ├── screens/                               # Screen components (UI only)
 │   ├── services/                              # Business logic & API calls
+│   ├── state/                                 # Application state management
 │   └── utils/                                 # Pure utility functions
 ├── ios/                                       # iOS platform files
 └── .expo/                                     # Expo build artifacts
@@ -71,6 +77,7 @@ VoyageMobile is a React Native + Expo mobile application built with TypeScript, 
 - Path aliases configured for clean imports:
   - `@app/*` → `app/*`
   - `@services/*` → `app/services/*`
+  - `@state/*` → `app/state/*`
   - `@utils/*` → `app/utils/*`
   - `@screens/*` → `app/screens/*`
 - ESNext target with modern module resolution
@@ -85,6 +92,7 @@ interface UserProfileProps {
 
 export const UserProfile: React.FC<UserProfileProps> = ({ userId, onUpdate }) => {
   // UI logic only, delegate business logic to services
+  // Use state hooks for application state
 };
 ```
 
@@ -99,6 +107,21 @@ interface UserService {
 export class SupabaseUserService implements UserService {
   // Implementation details
 }
+```
+
+### State Management Architecture
+```typescript
+// Good: Interface-based state design following SOLID principles
+export interface IBaseStore<T> {
+  state: T;
+  actions: Record<string, (...args: unknown[]) => void>;
+}
+
+// Store creation follows consistent patterns
+export type StoreCreator<T> = (
+  set: (partial: Partial<T> | ((state: T) => Partial<T>)) => void,
+  get: () => T
+) => T & Record<string, unknown>;
 ```
 
 ### Styling with NativeWind
@@ -136,6 +159,8 @@ bun run web                  # Run on web
 ### Naming Conventions
 - **Components**: PascalCase (`UserProfile.tsx`)
 - **Services**: PascalCase with Service suffix (`UserService.ts`)
+- **State Stores**: camelCase with Store suffix (`userStore.ts`)
+- **State Hooks**: camelCase with 'use' prefix (`useUserState.ts`)
 - **Utils**: camelCase (`formatDate.ts`)
 - **Constants**: SCREAMING_SNAKE_CASE (`API_ENDPOINTS`)
 - **Interfaces**: PascalCase with descriptive names (`UserData`, `ApiResponse`)
@@ -152,8 +177,20 @@ app/
 ├── services/
 │   ├── auth/
 │   │   └── AuthService.ts
-│   └── user/
-│       └── UserService.ts
+│   ├── i18n/
+│   │   └── I18nService.ts
+│   └── upload/
+│       └── UploadService.ts
+├── state/
+│   ├── stores/
+│   │   ├── userStore.ts
+│   │   └── appSettingsStore.ts
+│   ├── hooks/
+│   │   ├── useUserState.ts
+│   │   └── useAppState.ts
+│   ├── types/
+│   │   └── StoreTypes.ts
+│   └── index.ts
 └── utils/
     ├── validation/
     │   └── validators.ts
@@ -172,10 +209,40 @@ app/
 - Implement proper list optimization with FlatList
 - Lazy load screens and heavy components
 - Optimize images and assets
+- Use efficient state management patterns
+
+## State Management Guidelines
+
+### Store Design Principles
+- Follow the Interface Segregation Principle - expose only necessary state
+- Implement consistent interfaces using `IBaseStore<T>`
+- Use TypeScript for all state definitions
+- Implement proper error handling in state actions
+- Use MMKV for persistent state when appropriate
+
+### State Organization
+- **stores/**: Individual state stores (user, app settings, navigation)
+- **hooks/**: Custom hooks for consuming state
+- **types/**: TypeScript definitions for state structures
+- **providers/**: Context providers when needed
+
+### State Usage Patterns
+```typescript
+// Import state using path aliases
+import { useUserStore } from '@state/stores/userStore';
+import type { IBaseStore } from '@state/types/StoreTypes';
+
+// Components consume state through custom hooks
+const MyComponent = () => {
+  const { user, updateUser } = useUserStore();
+  // Component logic
+};
+```
 
 ## Testing Standards
 - Unit tests for services and utilities
 - Component testing with React Native Testing Library
+- State store testing with proper mocking
 - Integration tests for critical user flows
 - E2E testing with Detox (when applicable)
 
@@ -184,6 +251,7 @@ app/
 - Proper authentication flow implementation
 - API key and secret management
 - Input validation and sanitization
+- Secure state management for sensitive user data
 
 ## Expo Integration
 - Follow Expo managed workflow best practices
@@ -191,4 +259,4 @@ app/
 - Proper configuration in [app.json](mdc:app.json)
 - Platform-specific builds when necessary
 
-Remember: Always follow SOLID principles, maintain type safety, and leverage bun's performance benefits throughout development.
+Remember: Always follow SOLID principles, maintain type safety, leverage bun's performance benefits, and use the proper architectural layers (UI → State/Services → Utils) throughout development.
