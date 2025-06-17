@@ -53,7 +53,6 @@ export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
     }
   };
 
-  const title = isSignUp ? "Create Account" : "Sign In";
   const buttonText = isSignUp ? "Send Verification Code" : "Send Login Code";
   const subtitle = isSignUp
     ? "Enter your email to get started"
@@ -66,9 +65,6 @@ export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
     >
       <View className="flex-1 justify-center px-6">
         <View className="mb-8">
-          <Text className="mb-2 text-center text-3xl font-bold text-primary">
-            {title}
-          </Text>
           <Text className="text-center text-base text-gray-600">
             {subtitle}
           </Text>

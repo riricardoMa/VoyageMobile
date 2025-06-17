@@ -28,20 +28,40 @@ function AuthStackNavigator() {
   return (
     <AuthStack.Navigator
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: "#f1e5da", // iris-parchment (background color)
+        },
+        headerTintColor: "#C6B29A", // fuschia-rodeo-dust (primary color)
+        headerTitleStyle: {
+          fontWeight: "bold",
+          fontSize: 18,
+        },
         // When logging out, a pop animation feels intuitive
         animation: "slide_from_right",
       }}
     >
-      <AuthStack.Screen name="AuthWelcome" component={AuthWelcomeScreen} />
+      <AuthStack.Screen
+        name="AuthWelcome"
+        component={AuthWelcomeScreen}
+        options={{ headerShown: false }}
+      />
       <AuthStack.Screen
         name="EmailInput"
         component={EmailInputScreen}
         initialParams={{ isSignUp: true }}
+        options={({ route }) => ({
+          title: route.params?.isSignUp ? "Create Account" : "Sign In",
+        })}
       />
       <AuthStack.Screen
         name="OTPVerification"
         component={OTPVerificationScreen}
+        options={({ route }) => ({
+          title: route.params?.isSignUp
+            ? "Verify Your Email"
+            : "Enter Verification Code",
+        })}
       />
     </AuthStack.Navigator>
   );

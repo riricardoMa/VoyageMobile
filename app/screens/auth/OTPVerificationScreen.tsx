@@ -66,14 +66,9 @@ export const OTPVerificationScreen: React.FC = () => {
     navigation.navigate("EmailInput", { isSignUp });
   };
 
-  const title = isSignUp ? "Verify Your Email" : "Enter Verification Code";
-
   return (
     <View className="flex-1 justify-center bg-background px-6">
       <View className="mb-8">
-        <Text className="mb-2 text-center text-3xl font-bold text-primary">
-          {title}
-        </Text>
         <Text className="mb-2 text-center text-base text-gray-600">
           We sent a 6-digit code to:
         </Text>
