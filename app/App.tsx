@@ -34,6 +34,7 @@ function AuthStackNavigator() {
         headerStyle: {
           backgroundColor: "#FAFAFA",
         },
+        headerShadowVisible: false,
         headerTintColor: "#0F141A",
         headerTitleStyle: {
           fontWeight: "bold",

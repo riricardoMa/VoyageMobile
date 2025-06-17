@@ -60,7 +60,7 @@ export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-background"
+      className="flex-1 bg-[#FAFAFA]"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View className="flex-1 justify-center px-6">
