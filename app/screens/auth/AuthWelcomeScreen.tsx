@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "@app/types/navigation";
-import VoyageTextSVG from "@app/components/svg/VoyageTextSVG";
+import { Iconify } from "react-native-iconify";
 
 type AuthWelcomeScreenProps = NativeStackScreenProps<
   AuthStackParamList,
@@ -26,12 +26,16 @@ export const AuthWelcomeScreen: React.FC<AuthWelcomeScreenProps> = ({
       <View className="mb-8 items-center">
         <Image
           source={require("@app/assets/auth/logo.png")}
-          className="mb-6 h-32 w-32"
+          className="mb-6 h-[228px] w-[261px]"
           resizeMode="contain"
         />
 
         {/* Voyage Text */}
-        <VoyageTextSVG />
+        <Image
+          source={require("@app/assets/auth/voyage-text.png")}
+          className="mb-6 h-[52px] w-[211px]"
+          resizeMode="contain"
+        />
       </View>
 
       {/* Sign Up Buttons */}
@@ -41,6 +45,7 @@ export const AuthWelcomeScreen: React.FC<AuthWelcomeScreenProps> = ({
           onPress={handleSignUpWithEmail}
           className="flex-row items-center justify-center rounded-full bg-primary px-6 py-4"
         >
+          <Iconify icon="ic:outline-email" size={24} color="white" />
           <Text className="ml-2 text-lg font-medium text-white">
             Sign Up with Email
           </Text>
@@ -49,7 +54,7 @@ export const AuthWelcomeScreen: React.FC<AuthWelcomeScreenProps> = ({
 
       {/* Login Link */}
       <View className="mt-12 flex-row">
-        <Text className="text-base text-gray-600">
+        <Text className="text-auth-login-text text-base">
           Already have an account?{" "}
         </Text>
         <TouchableOpacity onPress={handleLogin}>

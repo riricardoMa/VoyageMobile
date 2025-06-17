@@ -25,6 +25,7 @@ module.exports = {
         background: '#f1e5da',        // Iris parchment
         surface: '#e3d1c6',           // Iris Bone
         'auth-background': '#f3f0eb', // Auth welcome screen background (243, 240, 235)
+        'auth-login-text': '#333333', // Auth login text (51, 51, 51)
       },
     },
   },
