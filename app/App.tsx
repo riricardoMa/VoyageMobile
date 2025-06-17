@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthProvider, useAuth } from "./services/auth/useAuth";
 import { UploadProvider } from "./services/upload";
+import { I18nProvider } from "./services/i18n";
 import SignInScreen from "@screens/SignInScreen";
 import WelcomeScreen from "@screens/WelcomeScreen";
 
@@ -26,12 +27,14 @@ export default function App() {
   const bucketName = process.env.EXPO_PUBLIC_SUPABASE_BUCKET_NAME || "media";
 
   return (
-    <AuthProvider>
-      <UploadProvider bucketName={bucketName}>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
-      </UploadProvider>
-    </AuthProvider>
+    <I18nProvider>
+      <AuthProvider>
+        <UploadProvider bucketName={bucketName}>
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+        </UploadProvider>
+      </AuthProvider>
+    </I18nProvider>
   );
 }
