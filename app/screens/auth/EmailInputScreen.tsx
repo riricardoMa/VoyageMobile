@@ -1,20 +1,34 @@
 import React, { useState } from "react";
 import { View, Text, KeyboardAvoidingView, Platform } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Input, Button } from "@app/components/ui";
 import { useAuth } from "@services/auth/useAuth";
 
+import type { AuthStackParamList } from "@app/types/navigation";
+
+type EmailInputScreenNavigationProp = NativeStackNavigationProp<
+  AuthStackParamList,
+  "EmailInput"
+>;
+
 interface EmailInputScreenProps {
-  onEmailSubmitted: (email: string) => void;
-  isSignUp?: boolean;
+  route?: {
+    params?: {
+      isSignUp?: boolean;
+    };
+  };
 }
 
 export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
-  onEmailSubmitted,
-  isSignUp = true,
+  route,
 }) => {
+  const navigation = useNavigation<EmailInputScreenNavigationProp>();
   const { signInWithOtp, loading, error } = useAuth();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+
+  const isSignUp = route?.params?.isSignUp ?? true;
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,7 +49,7 @@ export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
 
     await signInWithOtp(email);
     if (!error) {
-      onEmailSubmitted(email);
+      navigation.navigate("OTPVerification", { email, isSignUp });
     }
   };
 

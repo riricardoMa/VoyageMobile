@@ -1,33 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import type { RouteProp } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { OTPInput, Button, LoadingSpinner } from "@app/components/ui";
 import { useAuth } from "@services/auth/useAuth";
 
-interface OTPVerificationScreenProps {
-  email: string;
-  onBack: () => void;
-  onSuccess: () => void;
-  isSignUp?: boolean;
-}
+import type { AuthStackParamList } from "@app/types/navigation";
 
-export const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({
-  email,
-  onBack,
-  onSuccess,
-  isSignUp = true,
-}) => {
+type OTPVerificationScreenNavigationProp = NativeStackNavigationProp<
+  AuthStackParamList,
+  "OTPVerification"
+>;
+
+type OTPVerificationScreenRouteProp = RouteProp<
+  AuthStackParamList,
+  "OTPVerification"
+>;
+
+export const OTPVerificationScreen: React.FC = () => {
+  const navigation = useNavigation<OTPVerificationScreenNavigationProp>();
+  const route = useRoute<OTPVerificationScreenRouteProp>();
   const { verifyOtp, signInWithOtp, loading, error, isAuthenticated } =
     useAuth();
+
+  const { email, isSignUp = true } = route.params;
+
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
   const [resendCountdown, setResendCountdown] = useState(0);
-
-  // Check if user is authenticated after OTP verification
-  useEffect(() => {
-    if (isAuthenticated) {
-      onSuccess();
-    }
-  }, [isAuthenticated, onSuccess]);
 
   // Countdown timer for resend button
   useEffect(() => {
@@ -51,6 +52,8 @@ export const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({
     if (error) {
       setOtpError("Invalid verification code. Please try again.");
     }
+    // Note: Navigation will be handled automatically by the AuthContext
+    // when isAuthenticated becomes true
   };
 
   const handleResendCode = async () => {
@@ -58,6 +61,10 @@ export const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({
     setOtpError("");
     setResendCountdown(60);
     await signInWithOtp(email);
+  };
+
+  const handleBackToEmail = () => {
+    navigation.navigate("EmailInput", { isSignUp });
   };
 
   const title = isSignUp ? "Verify Your Email" : "Enter Verification Code";
@@ -110,7 +117,7 @@ export const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={onBack}
+          onPress={handleBackToEmail}
           disabled={loading}
           className={`px-4 py-2 ${loading ? "opacity-50" : ""}`}
         >
