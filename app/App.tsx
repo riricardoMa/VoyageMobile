@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthProvider, useAuth } from "./services/auth/useAuth";
 import { UploadProvider } from "./services/upload";
 import { I18nProvider } from "./services/i18n";
-import SignInScreenProofOfConcept from "@app/screens/SignInScreenProofOfConcept";
+import { AuthFlowScreen } from "@app/screens/auth";
 import WelcomeScreen from "@screens/WelcomeScreen";
 
 const Stack = createNativeStackNavigator();
@@ -17,7 +17,7 @@ function RootNavigator() {
       {isAuthenticated ? (
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
       ) : (
-        <Stack.Screen name="SignIn" component={SignInScreenProofOfConcept} />
+        <Stack.Screen name="SignIn" component={AuthFlowScreen} />
       )}
     </Stack.Navigator>
   );
