@@ -25,11 +25,10 @@ type OTPVerificationScreenRouteProp = RouteProp<
 >;
 
 export const OTPVerificationScreen: React.FC = () => {
-  const navigation = useNavigation<OTPVerificationScreenNavigationProp>();
   const route = useRoute<OTPVerificationScreenRouteProp>();
   const { verifyOtp, signInWithOtp, loading, error } = useAuth();
 
-  const { email, isSignUp = true } = route.params;
+  const { email } = route.params;
 
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
@@ -47,10 +46,10 @@ export const OTPVerificationScreen: React.FC = () => {
 
   // Auto-submit when OTP is complete
   useEffect(() => {
-    if (otp.length === 6 && !loading) {
+    if (otp.length === 6 && !loading && !otpError) {
       handleVerifyOtp();
     }
-  }, [otp, loading]);
+  }, [otp, loading, otpError]);
 
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
@@ -64,8 +63,6 @@ export const OTPVerificationScreen: React.FC = () => {
     if (error) {
       setOtpError("Invalid verification code. Please try again.");
     }
-    // Note: Navigation will be handled automatically by the AuthContext
-    // when isAuthenticated becomes true
   };
 
   const handleResendCode = async () => {
@@ -94,7 +91,7 @@ export const OTPVerificationScreen: React.FC = () => {
               setOtp(text);
               if (otpError) setOtpError("");
             }}
-            error={otpError || error || undefined}
+            error={otpError}
             autoFocus
             disabled={loading}
           />

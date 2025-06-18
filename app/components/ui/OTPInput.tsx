@@ -37,6 +37,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
     const numericText = text.replace(/[^0-9]/g, "");
 
     if (numericText.length <= 1) {
+      // Single character input (normal typing)
       const newValue = value.split("");
       newValue[index] = numericText;
       const updatedValue = newValue.join("");
@@ -47,14 +48,41 @@ export const OTPInput: React.FC<OTPInputProps> = ({
         inputRefs.current[index + 1]?.focus();
         setFocusedIndex(index + 1);
       }
+    } else if (numericText.length > 1) {
+      // Multiple characters input (paste)
+      const newValue = Array(length).fill("");
+      const pasteLength = Math.min(numericText.length, length - index);
+
+      // Fill existing characters
+      for (let i = 0; i < index; i++) {
+        newValue[i] = value[i] || "";
+      }
+
+      // Fill pasted characters
+      for (let i = 0; i < pasteLength; i++) {
+        newValue[index + i] = numericText[i];
+      }
+
+      const updatedValue = newValue.join("");
+      onChangeText(updatedValue);
+
+      // Focus the next empty input or the last filled input
+      const nextFocusIndex = Math.min(index + pasteLength, length - 1);
+      inputRefs.current[nextFocusIndex]?.focus();
+      setFocusedIndex(nextFocusIndex);
     }
   };
 
   const handleKeyPress = (key: string, index: number) => {
     if (disabled) return;
 
-    if (key === "Backspace" && !value[index] && index > 0) {
-      // Focus previous input on backspace if current is empty
+    if (key === "Backspace" && index > 0) {
+      // Clear the previous input and focus it
+      const newValue = value.split("");
+      newValue[index - 1] = "";
+      const updatedValue = newValue.join("");
+      onChangeText(updatedValue);
+
       inputRefs.current[index - 1]?.focus();
       setFocusedIndex(index - 1);
     }
@@ -106,7 +134,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
             maxLength={1}
             selectTextOnFocus
             textAlign="center"
-            editable={!error && !disabled}
+            editable={!disabled}
             style={{
               elevation: 0,
               shadowOpacity: 0,
