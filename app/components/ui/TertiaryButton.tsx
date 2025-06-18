@@ -7,7 +7,7 @@ import {
 import { Iconify } from "react-native-iconify";
 import { cn } from "@sglara/cn";
 
-interface SecondaryButtonProps extends TouchableOpacityProps {
+interface TertiaryButtonProps extends TouchableOpacityProps {
   title: string;
   icon?: string;
   iconSize?: number;
@@ -15,7 +15,7 @@ interface SecondaryButtonProps extends TouchableOpacityProps {
   loading?: boolean;
 }
 
-export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
+export const TertiaryButton: React.FC<TertiaryButtonProps> = ({
   title,
   icon,
   iconSize = 24,

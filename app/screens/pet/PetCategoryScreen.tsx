@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PetRegistrationStackParamList } from "@app/types/navigation";
-import { PetCategoryCard, SecondaryButton } from "@app/components/ui";
+import { PetCategoryCard, TertiaryButton } from "@app/components/ui";
 
 type PetCategoryScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -56,14 +56,12 @@ export default function PetCategoryScreen({
 
         {/* Next Button */}
         <View className="px-4 pb-6">
-          <SecondaryButton
+          <TertiaryButton
             title="Next"
             onPress={handleNext}
             disabled={!selectedCategory}
             className={`${
-              selectedCategory
-                ? "border-fuschia-rodeo-dust bg-iris-parchment"
-                : "border-iris-bone bg-iris-parchment/50"
+              selectedCategory ? " bg-iris-parchment" : " bg-iris-parchment/50"
             }`}
           />
         </View>

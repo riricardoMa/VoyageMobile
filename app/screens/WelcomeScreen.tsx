@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AppStackParamList } from "@app/types/navigation";
-import { PrimaryButton, SecondaryButton } from "@app/components/ui";
+import { PrimaryButton, TertiaryButton } from "@app/components/ui";
 import { Welcome } from "@app/components/svg/Welcome";
 
 type WelcomeScreenProps = NativeStackScreenProps<AppStackParamList, "Welcome">;
@@ -30,7 +30,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
         <PrimaryButton title="Register Pets" onPress={handleRegisterPets} />
 
         {/* Start Exploring - Secondary Button */}
-        <SecondaryButton
+        <TertiaryButton
           title="Start Exploring"
           onPress={handleStartExploring}
         />
