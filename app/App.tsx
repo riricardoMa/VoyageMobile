@@ -12,17 +12,27 @@ import { SplashScreen } from "@screens/SplashScreen";
 import { EmailInputScreen, OTPVerificationScreen } from "@app/screens/auth";
 import WelcomeScreen from "@screens/WelcomeScreen";
 import { MediaUploadScreen } from "@screens/MediaUploadScreen";
+import {
+  PetCategoryScreen,
+  PetPhotoScreen,
+  PetBasicInfoScreen,
+  PetBirthdayScreen,
+  PetSexScreen,
+} from "@app/screens/pet";
 
 // Navigation types
 import type {
   AuthStackParamList,
   AppStackParamList,
+  PetRegistrationStackParamList,
 } from "@app/types/navigation";
 import { AuthWelcomeScreen } from "./screens/auth/AuthWelcomeScreen";
 import { ArrowLeft, Close } from "./components/svg";
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
+const PetRegistrationStack =
+  createNativeStackNavigator<PetRegistrationStackParamList>();
 const RootStack = createNativeStackNavigator();
 
 // Auth Stack Navigator - shown when user is NOT authenticated
@@ -88,6 +98,64 @@ function AuthStackNavigator() {
   );
 }
 
+// Pet Registration Stack Navigator - multi-step pet registration flow
+function PetRegistrationStackNavigator() {
+  return (
+    <PetRegistrationStack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: "#f1e5da", // iris-parchment/background
+        },
+        headerShadowVisible: false,
+        headerTintColor: "#c3b39d", // fuschia-rodeo-dust/primary
+        headerTitleStyle: {
+          fontWeight: "bold",
+          fontSize: 18,
+        },
+        animation: "slide_from_right",
+      }}
+    >
+      <PetRegistrationStack.Screen
+        name="PetCategory"
+        component={PetCategoryScreen}
+        options={{
+          title: "Category",
+          headerBackTitle: "Cancel",
+        }}
+      />
+      <PetRegistrationStack.Screen
+        name="PetPhoto"
+        component={PetPhotoScreen}
+        options={{
+          title: "Headphoto",
+        }}
+      />
+      <PetRegistrationStack.Screen
+        name="PetBasicInfo"
+        component={PetBasicInfoScreen}
+        options={{
+          title: "Basic Information",
+        }}
+      />
+      <PetRegistrationStack.Screen
+        name="PetBirthday"
+        component={PetBirthdayScreen}
+        options={{
+          title: "Birthday",
+        }}
+      />
+      <PetRegistrationStack.Screen
+        name="PetSex"
+        component={PetSexScreen}
+        options={{
+          title: "Sex",
+        }}
+      />
+    </PetRegistrationStack.Navigator>
+  );
+}
+
 // App Stack Navigator - shown when user IS authenticated
 function AppStackNavigator() {
   return (
@@ -98,6 +166,10 @@ function AppStackNavigator() {
     >
       <AppStack.Screen name="Welcome" component={WelcomeScreen} />
       <AppStack.Screen name="MediaUpload" component={MediaUploadScreen} />
+      <AppStack.Screen
+        name="PetRegistration"
+        component={PetRegistrationStackNavigator}
+      />
     </AppStack.Navigator>
   );
 }

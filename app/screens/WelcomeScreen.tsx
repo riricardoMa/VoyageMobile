@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AppStackParamList } from "@app/types/navigation";
 import { PrimaryButton, SecondaryButton } from "@app/components/ui";
@@ -9,9 +9,7 @@ type WelcomeScreenProps = NativeStackScreenProps<AppStackParamList, "Welcome">;
 
 export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
   const handleRegisterPets = () => {
-    Alert.alert("Coming Soon", "Pet registration feature is coming soon!", [
-      { text: "OK", style: "default" },
-    ]);
+    navigation.navigate("PetRegistration");
   };
 
   const handleStartExploring = () => {

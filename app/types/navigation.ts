@@ -11,7 +11,18 @@ export type AuthStackParamList = {
 export type AppStackParamList = {
   Welcome: undefined;
   MediaUpload: undefined;
+  // Pet Registration Stack
+  PetRegistration: undefined;
   // Add more main app screens here as you build them
+};
+
+// Pet Registration Stack - multi-step pet registration flow
+export type PetRegistrationStackParamList = {
+  PetCategory: undefined;
+  PetPhoto: undefined;
+  PetBasicInfo: undefined;
+  PetBirthday: undefined;
+  PetSex: undefined;
 };
 
 // Root Stack - top level navigation
