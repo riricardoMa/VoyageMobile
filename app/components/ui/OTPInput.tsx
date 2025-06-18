@@ -1,3 +1,4 @@
+import { cn } from "@sglara/cn";
 import React, { useRef, useState, useEffect } from "react";
 import { View, TextInput, Text } from "react-native";
 
@@ -70,23 +71,23 @@ export const OTPInput: React.FC<OTPInputProps> = ({
 
   const getInputClasses = (index: number) => {
     const baseClasses =
-      "w-14 h-14 border-2 rounded-xl text-center text-xl font-semibold";
+      "w-14 h-14 border-2 rounded-xl text-center text-xl font-semibold bg-fuschia-rodeo-dust/25";
     const colorClasses = error
-      ? "border-red-500 bg-red-50 text-red-700"
+      ? "border-schemes-on-error-container text-schemes-error"
       : disabled
         ? "border-[#E5E5E5] bg-[#F5F5F5] text-[#999999]"
         : focusedIndex === index
-          ? "border-fuschia-rodeo-dust bg-white text-[#333333]"
+          ? "border-fuschia-rodeo-dust text-[#333333]"
           : value[index]
-            ? "border-fuschia-dust-storm bg-white text-[#333333]"
-            : "border-[#E5E5E5] bg-white text-[#333333]";
+            ? "border-fuschia-dust-storm text-[#333333]"
+            : "border-fuschia-dust-storm text-[#333333]";
 
-    return `${baseClasses} ${colorClasses}`.trim();
+    return cn(baseClasses, colorClasses);
   };
 
   return (
     <View className="w-full">
-      <View className="mb-4 flex-row justify-center space-x-3">
+      <View className="mb-4 w-full flex-row justify-between">
         {Array.from({ length }, (_, index) => (
           <TextInput
             key={index}

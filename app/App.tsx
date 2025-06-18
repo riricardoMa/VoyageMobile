@@ -69,9 +69,7 @@ function AuthStackNavigator() {
         name="OTPVerification"
         component={OTPVerificationScreen}
         options={({ route, navigation }) => ({
-          title: route.params?.isSignUp
-            ? "Verify Your Email"
-            : "Enter Verification Code",
+          title: "",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() =>

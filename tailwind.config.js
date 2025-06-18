@@ -18,6 +18,10 @@ module.exports = {
           'parchment': '#f1e5da',     // rgb(241, 229, 218)
           'bone': '#e3d1c6',          // rgb(227, 209, 198)
         },
+        schemes: {
+          'error': '#B3261E',
+          'on-error-container': '#852221',
+        }
       },
     },
   },
