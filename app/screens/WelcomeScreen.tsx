@@ -34,7 +34,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
       </View>
 
       {/* Action Buttons */}
-      <View className="w-full space-y-4">
+      <View className="flex w-full flex-col gap-4">
         {/* Register Pets - Primary Button */}
         <PrimaryButton title="Register Pets" onPress={handleRegisterPets} />
 
