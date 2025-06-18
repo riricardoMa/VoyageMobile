@@ -11,6 +11,7 @@ module.exports = function (api) {
       {
         icons: [
           'ic:outline-email',
+          'material-symbols:error-outline'
         ],
       },
     ],

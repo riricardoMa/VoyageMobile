@@ -1,6 +1,7 @@
 import { cn } from "@sglara/cn";
 import React from "react";
 import { TextInput, Text, View, type TextInputProps } from "react-native";
+import Iconify from "react-native-iconify";
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -40,7 +41,16 @@ export const Input: React.FC<InputProps> = ({
         }}
         {...props}
       />
-      {error && <Text className="mt-1 text-sm text-red-600">{error}</Text>}
+      {error && (
+        <View className="flex-row items-center gap-1">
+          <Iconify
+            icon="material-symbols:error-outline"
+            size={24}
+            color="#852221"
+          />
+          <Text className="mt-1 text-sm text-red-600">{error}</Text>
+        </View>
+      )}
     </View>
   );
 };
