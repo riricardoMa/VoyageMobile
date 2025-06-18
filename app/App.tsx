@@ -28,6 +28,7 @@ import type {
 } from "@app/types/navigation";
 import { AuthWelcomeScreen } from "./screens/auth/AuthWelcomeScreen";
 import { ArrowLeft, Close } from "./components/svg";
+import { PetRegistrationHeader } from "./components/ui";
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
@@ -104,16 +105,10 @@ function PetRegistrationStackNavigator() {
     <PetRegistrationStack.Navigator
       screenOptions={{
         headerShown: true,
-        headerStyle: {
-          backgroundColor: "#f1e5da", // iris-parchment/background
-        },
-        headerShadowVisible: false,
-        headerTintColor: "#c3b39d", // fuschia-rodeo-dust/primary
-        headerTitleStyle: {
-          fontWeight: "bold",
-          fontSize: 18,
-        },
         animation: "slide_from_right",
+        header: ({ route }) => {
+          return <PetRegistrationHeader routeName={route.name} />;
+        },
       }}
     >
       <PetRegistrationStack.Screen
