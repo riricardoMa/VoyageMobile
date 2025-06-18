@@ -4,3 +4,5 @@ export { PrimaryButton } from "./PrimaryButton";
 export { SecondaryButton } from "./SecondaryButton";
 export { OTPInput } from "./OTPInput";
 export { LoadingSpinner } from "./LoadingSpinner";
+export { ProgressIndicator } from "./ProgressIndicator";
+export { PetCategoryCard } from "./PetCategoryCard";
