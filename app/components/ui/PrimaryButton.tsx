@@ -28,7 +28,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   const buttonClasses = cn(
     "flex-row items-center justify-center rounded-full bg-fuschia-rodeo-dust py-3",
     {
-      "opacity-50": disabled || loading,
+      "bg-fuschia-rodeo-dust/40": disabled || loading,
     },
     className
   );
@@ -43,7 +43,13 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       {icon && !loading && (
         <Iconify icon={icon} size={iconSize} color={iconColor} />
       )}
-      <Text className={`text-lg font-medium text-white ${icon ? "ml-2" : ""}`}>
+      <Text
+        className={cn(
+          "text-lg font-medium text-white",
+          icon ? "ml-2" : "",
+          disabled ? "font-bold text-fuschia-rodeo-dust/90" : ""
+        )}
+      >
         {loading ? "Loading..." : title}
       </Text>
     </TouchableOpacity>
