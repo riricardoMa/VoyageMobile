@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { RouteProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { OTPInput, Button, LoadingSpinner } from "@app/components/ui";
+import { OTPInput } from "@app/components/ui";
 import { useAuth } from "@services/auth/useAuth";
 
 import type { AuthStackParamList } from "@app/types/navigation";
@@ -39,6 +45,13 @@ export const OTPVerificationScreen: React.FC = () => {
     }
   }, [resendCountdown]);
 
+  // Auto-submit when OTP is complete
+  useEffect(() => {
+    if (otp.length === 6 && !loading) {
+      handleVerifyOtp();
+    }
+  }, [otp, loading]);
+
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
       setOtpError("Please enter all 6 digits");
@@ -58,76 +71,49 @@ export const OTPVerificationScreen: React.FC = () => {
   const handleResendCode = async () => {
     setOtp("");
     setOtpError("");
-    setResendCountdown(60);
+    setResendCountdown(30);
     await signInWithOtp(email);
   };
 
-  const handleBackToEmail = () => {
-    navigation.navigate("EmailInput", { isSignUp });
-  };
-
   return (
-    <View className="flex-1 justify-center bg-background px-6">
-      <View className="mb-8">
-        <Text className="mb-2 text-center text-base text-gray-600">
-          We sent a 6-digit code to:
-        </Text>
-        <Text className="text-center text-base font-semibold text-primary">
-          {email}
-        </Text>
-      </View>
-
-      <View className="mb-6">
-        <OTPInput
-          value={otp}
-          onChangeText={text => {
-            setOtp(text);
-            if (otpError) setOtpError("");
-          }}
-          error={otpError || error || undefined}
-          autoFocus
-        />
-      </View>
-
-      <Button
-        title="Verify Code"
-        onPress={handleVerifyOtp}
-        disabled={loading || otp.length !== 6}
-        loading={loading}
-        className="mb-4"
-      />
-
-      <View className="mb-6 flex-row items-center justify-between">
-        <TouchableOpacity
-          onPress={handleResendCode}
-          disabled={resendCountdown > 0 || loading}
-          className={`px-4 py-2 ${resendCountdown > 0 || loading ? "opacity-50" : ""}`}
-        >
-          <Text className="font-medium text-primary">
-            {resendCountdown > 0
-              ? `Resend in ${resendCountdown}s`
-              : "Resend Code"}
+    <KeyboardAvoidingView
+      className="flex-1 bg-[#FAFAFA]"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <View className="flex-1 px-6 pt-8">
+        <View className="mb-2">
+          <Text className="mb-6 text-2xl font-bold text-[#333333]">
+            Enter the code we just emailed you
           </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleBackToEmail}
-          disabled={loading}
-          className={`px-4 py-2 ${loading ? "opacity-50" : ""}`}
-        >
-          <Text className="font-medium text-gray-600">Change Email</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text className="text-center text-sm leading-5 text-gray-500">
-        Check your spam folder if you don't see the email
-      </Text>
-
-      {loading && (
-        <View className="mt-6">
-          <LoadingSpinner />
         </View>
-      )}
-    </View>
+
+        <View className="mb-4">
+          <OTPInput
+            value={otp}
+            onChangeText={text => {
+              setOtp(text);
+              if (otpError) setOtpError("");
+            }}
+            error={otpError || error || undefined}
+            autoFocus
+            disabled={loading}
+          />
+        </View>
+
+        <View className="flex-row justify-center">
+          <Text className="text-base text-[#333333]">
+            Didn't Receive Code?{" "}
+          </Text>
+          <TouchableOpacity
+            onPress={handleResendCode}
+            disabled={resendCountdown > 0 || loading}
+          >
+            <Text className="text-base font-bold text-fuschia-rodeo-dust">
+              {resendCountdown > 0 ? `Resend (${resendCountdown}s)` : "Resend"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 };

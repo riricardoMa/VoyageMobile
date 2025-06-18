@@ -7,6 +7,7 @@ interface OTPInputProps {
   length?: number;
   error?: string;
   autoFocus?: boolean;
+  disabled?: boolean;
 }
 
 export const OTPInput: React.FC<OTPInputProps> = ({
@@ -15,6 +16,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
   length = 6,
   error,
   autoFocus = false,
+  disabled = false,
 }) => {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(
     autoFocus ? 0 : null
@@ -22,12 +24,14 @@ export const OTPInput: React.FC<OTPInputProps> = ({
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
   useEffect(() => {
-    if (autoFocus && inputRefs.current[0]) {
+    if (autoFocus && inputRefs.current[0] && !disabled) {
       inputRefs.current[0].focus();
     }
-  }, [autoFocus]);
+  }, [autoFocus, disabled]);
 
   const handleTextChange = (text: string, index: number) => {
+    if (disabled) return;
+
     // Only allow numeric input
     const numericText = text.replace(/[^0-9]/g, "");
 
@@ -46,6 +50,8 @@ export const OTPInput: React.FC<OTPInputProps> = ({
   };
 
   const handleKeyPress = (key: string, index: number) => {
+    if (disabled) return;
+
     if (key === "Backspace" && !value[index] && index > 0) {
       // Focus previous input on backspace if current is empty
       inputRefs.current[index - 1]?.focus();
@@ -54,6 +60,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
   };
 
   const handleFocus = (index: number) => {
+    if (disabled) return;
     setFocusedIndex(index);
   };
 
@@ -63,19 +70,23 @@ export const OTPInput: React.FC<OTPInputProps> = ({
 
   const getInputClasses = (index: number) => {
     const baseClasses =
-      "w-12 h-12 border rounded-lg text-center text-lg font-semibold";
+      "w-14 h-14 border-2 rounded-xl text-center text-xl font-semibold";
     const colorClasses = error
-      ? "border-red-500 bg-red-50"
-      : focusedIndex === index
-        ? "border-primary bg-background"
-        : "border-accent bg-background";
+      ? "border-red-500 bg-red-50 text-red-700"
+      : disabled
+        ? "border-[#E5E5E5] bg-[#F5F5F5] text-[#999999]"
+        : focusedIndex === index
+          ? "border-fuschia-rodeo-dust bg-white text-[#333333]"
+          : value[index]
+            ? "border-fuschia-dust-storm bg-white text-[#333333]"
+            : "border-[#E5E5E5] bg-white text-[#333333]";
 
     return `${baseClasses} ${colorClasses}`.trim();
   };
 
   return (
-    <View className="mb-4">
-      <View className="flex-row justify-center space-x-3">
+    <View className="w-full">
+      <View className="mb-4 flex-row justify-center space-x-3">
         {Array.from({ length }, (_, index) => (
           <TextInput
             key={index}
@@ -94,11 +105,16 @@ export const OTPInput: React.FC<OTPInputProps> = ({
             maxLength={1}
             selectTextOnFocus
             textAlign="center"
+            editable={!error && !disabled}
+            style={{
+              elevation: 0,
+              shadowOpacity: 0,
+            }}
           />
         ))}
       </View>
       {error && (
-        <Text className="mt-2 text-center text-sm text-red-600">{error}</Text>
+        <Text className="px-4 text-center text-sm text-red-600">{error}</Text>
       )}
     </View>
   );
