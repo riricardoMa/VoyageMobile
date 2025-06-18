@@ -74,7 +74,7 @@ export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
           <Input
             label="Email Address"
             variant="email"
-            placeholder="Enter your email"
+            placeholder="Email"
             value={email}
             onChangeText={text => {
               setEmail(text);

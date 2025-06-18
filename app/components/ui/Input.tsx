@@ -1,3 +1,4 @@
+import { cn } from "@sglara/cn";
 import React from "react";
 import { TextInput, Text, View, type TextInputProps } from "react-native";
 
@@ -16,21 +17,22 @@ export const Input: React.FC<InputProps> = ({
 }) => {
   const getInputClasses = () => {
     const baseClasses =
-      "bg-background border border-accent rounded-lg px-4 py-3 text-base";
-    const errorClasses = error ? "border-red-500" : "";
-    const focusClasses = "focus:border-primary";
+      "bg-fuschia-rodeo-dust/25 rounded-lg px-4 py-3 text-base";
+    const errorClasses = error ? "border-[#852221]" : "";
 
-    return `${baseClasses} ${errorClasses} ${focusClasses} ${className || ""}`.trim();
+    return cn(baseClasses, errorClasses, className);
   };
 
   return (
     <View className="mb-4">
       {label && (
-        <Text className="mb-2 text-sm font-medium text-primary">{label}</Text>
+        <Text className="mb-2 text-base font-medium text-[#333333]">
+          {label}
+        </Text>
       )}
       <TextInput
         className={getInputClasses()}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#59738C"
         autoCapitalize={variant === "email" ? "none" : "sentences"}
         keyboardType={variant === "email" ? "email-address" : "default"}
         autoComplete={variant === "email" ? "email" : "off"}
