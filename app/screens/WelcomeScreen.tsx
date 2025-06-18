@@ -1,54 +1,52 @@
 import React from "react";
-import { View, Text, SafeAreaView } from "react-native";
-import { useAuth } from "../services/auth/useAuth";
-import { Button, LoadingSpinner } from "@app/components/ui";
+import { View, Text, Alert } from "react-native";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { AppStackParamList } from "@app/types/navigation";
+import { PrimaryButton, SecondaryButton } from "@app/components/ui";
 
-export default function WelcomeScreen() {
-  const { session, signOut, loading } = useAuth();
+type WelcomeScreenProps = NativeStackScreenProps<AppStackParamList, "Welcome">;
 
-  if (loading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <LoadingSpinner />
-      </SafeAreaView>
-    );
-  }
+export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
+  const handleRegisterPets = () => {
+    Alert.alert("Coming Soon", "Pet registration feature is coming soon!", [
+      { text: "OK", style: "default" },
+    ]);
+  };
+
+  const handleStartExploring = () => {
+    // Navigate to MediaUpload screen or any other main app screen
+    navigation.navigate("MediaUpload");
+  };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-1 items-center justify-center px-6">
-        <View className="mb-8 items-center">
-          <Text className="mb-4 text-4xl font-bold text-primary">
-            Welcome to Voyage!
-          </Text>
-          <Text className="mb-2 text-center text-lg text-gray-600">
-            You're successfully signed in
-          </Text>
-          <Text className="text-center text-base font-medium text-primary">
-            {session?.user?.email}
-          </Text>
-        </View>
-
-        <View className="w-full">
-          <Button
-            title="Sign Out"
-            onPress={signOut}
-            disabled={loading}
-            loading={loading}
-            variant="outline"
-            className="mb-4"
-          />
-
-          <Button
-            title="Upload Media"
-            onPress={() => {
-              // This will be handled by navigation in the future
-              console.log("Navigate to media upload");
-            }}
-            className="mb-4"
-          />
-        </View>
+    <View className="flex-1 items-center justify-center bg-fuschia-rodeo-dust/20 px-6">
+      {/* Welcome Text */}
+      <View className="mb-16 items-center">
+        <Text className="text-center text-6xl font-bold leading-tight text-fuschia-rodeo-dust">
+          Welcome
+        </Text>
+        <Text className="text-center text-6xl font-bold leading-tight text-fuschia-rodeo-dust">
+          to
+        </Text>
+        <Text className="text-center text-6xl font-bold leading-tight text-fuschia-rodeo-dust">
+          Voyage
+        </Text>
       </View>
-    </SafeAreaView>
+
+      {/* Action Buttons */}
+      <View className="w-full space-y-4">
+        {/* Register Pets - Primary Button */}
+        <PrimaryButton title="Register Pets" onPress={handleRegisterPets} />
+
+        {/* Start Exploring - Secondary Button */}
+        <SecondaryButton
+          title="Start Exploring"
+          onPress={handleStartExploring}
+        />
+      </View>
+
+      {/* Add Extra Space */}
+      <View className="h-10" />
+    </View>
   );
 }
