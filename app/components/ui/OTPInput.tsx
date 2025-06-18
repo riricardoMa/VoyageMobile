@@ -99,7 +99,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
 
   const getInputClasses = (index: number) => {
     const baseClasses =
-      "w-14 h-14 border-2 rounded-xl text-center text-xl font-semibold bg-fuschia-rodeo-dust/25";
+      "w-[48px] h-[56px] border-2 rounded-xl text-center text-[28px] font-normal bg-fuschia-rodeo-dust/25";
     const colorClasses = error
       ? "border-schemes-on-error-container text-schemes-error"
       : disabled
@@ -138,6 +138,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
             style={{
               elevation: 0,
               shadowOpacity: 0,
+              textAlignVertical: "center",
             }}
           />
         ))}
