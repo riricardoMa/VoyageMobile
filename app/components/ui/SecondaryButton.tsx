@@ -45,9 +45,9 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
       )}
       <Text
         className={cn(
-          "text-lg font-medium text-fuschia-rodeo-dust",
+          "text-lg font-medium text-[#333333]",
           icon ? "ml-2" : "",
-          disabled || loading ? "text-fuschia-rodeo-dust/40" : ""
+          disabled || loading ? "text-[#333333]/40" : ""
         )}
       >
         {loading ? "Loading..." : title}
