@@ -17,16 +17,16 @@ export const Input: React.FC<InputProps> = ({
 }) => {
   const getInputClasses = () => {
     const baseClasses =
-      "bg-fuschia-rodeo-dust/25 rounded-lg px-4 py-3 text-base";
-    const errorClasses = error ? "border-[#852221]" : "";
+      "bg-fuschia-rodeo-dust/25 h-[56px] rounded-2xl p-4 text-base font-normal text-[#333333] placeholder:text-[#59738C] placeholder:text-base placeholder:font-normal";
+    const errorClasses = error ? "border border-[#852221]" : "";
 
     return cn(baseClasses, errorClasses, className);
   };
 
   return (
-    <View className="mb-4">
+    <View>
       {label && (
-        <Text className="mb-2 text-base font-medium text-[#333333]">
+        <Text className="mb-1 text-base font-medium text-[#333333]">
           {label}
         </Text>
       )}
@@ -37,6 +37,11 @@ export const Input: React.FC<InputProps> = ({
         keyboardType={variant === "email" ? "email-address" : "default"}
         autoComplete={variant === "email" ? "email" : "off"}
         autoCorrect={false}
+        style={{
+          fontSize: 16,
+          fontWeight: "normal",
+          lineHeight: 20,
+        }}
         {...props}
       />
       {error && <Text className="mt-1 text-sm text-red-600">{error}</Text>}

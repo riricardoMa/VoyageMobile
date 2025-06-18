@@ -26,7 +26,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   ...props
 }) => {
   const buttonClasses = cn(
-    "flex-row items-center justify-center rounded-full bg-fuschia-rodeo-dust px-6 py-4",
+    "flex-row items-center justify-center rounded-full bg-fuschia-rodeo-dust py-3",
     {
       "opacity-50": disabled || loading,
     },

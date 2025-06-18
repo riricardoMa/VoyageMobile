@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Input, Button } from "@app/components/ui";
+import { Input, Button, PrimaryButton } from "@app/components/ui";
 import { useAuth } from "@services/auth/useAuth";
 
 import type { AuthStackParamList } from "@app/types/navigation";
@@ -53,26 +59,19 @@ export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
     }
   };
 
-  const buttonText = isSignUp ? "Send Verification Code" : "Send Login Code";
-  const subtitle = isSignUp
-    ? "Enter your email to get started"
-    : "Enter your email to sign in";
+  const handleLoginPress = () => {
+    navigation.navigate("EmailInput", { isSignUp: false });
+  };
 
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-[#FAFAFA]"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View className="flex-1 justify-center px-6">
-        <View className="mb-8">
-          <Text className="text-center text-base text-gray-600">
-            {subtitle}
-          </Text>
-        </View>
-
+      <View className="flex-1 px-6 pt-8">
         <View className="mb-6">
           <Input
-            label="Email Address"
+            label="What's your email?"
             variant="email"
             placeholder="Email"
             value={email}
@@ -86,19 +85,22 @@ export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
           />
         </View>
 
-        <Button
-          title={buttonText}
+        <PrimaryButton
+          title="Send Code"
           onPress={handleSendCode}
           disabled={loading || !email}
           loading={loading}
-          className="mb-4"
+          className="mb-8"
         />
 
-        <Text className="text-center text-sm leading-5 text-gray-500">
-          {isSignUp
-            ? "We'll send you a 6-digit verification code to confirm your email"
-            : "We'll send you a 6-digit code to sign in"}
-        </Text>
+        <View className="flex-row justify-center">
+          <Text className="text-base text-gray-600">
+            Already have an account?{" "}
+          </Text>
+          <TouchableOpacity onPress={handleLoginPress}>
+            <Text className="text-base text-gray-400">Log in</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
