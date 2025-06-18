@@ -25,11 +25,7 @@ export const Input: React.FC<InputProps> = ({
 
   return (
     <View>
-      {label && (
-        <Text className="mb-1 text-base font-medium text-[#333333]">
-          {label}
-        </Text>
-      )}
+      {label && <Text className="mb-2 text-base text-[#333333]">{label}</Text>}
       <TextInput
         className={getInputClasses()}
         placeholderTextColor="#59738C"

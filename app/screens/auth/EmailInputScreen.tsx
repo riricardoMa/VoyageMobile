@@ -90,15 +90,17 @@ export const EmailInputScreen: React.FC<EmailInputScreenProps> = ({
           onPress={handleSendCode}
           disabled={loading || !email}
           loading={loading}
-          className="mb-8"
+          className="mb-4"
         />
 
         <View className="flex-row justify-center">
-          <Text className="text-base text-gray-600">
+          <Text className="text-base text-[#333333]">
             Already have an account?{" "}
           </Text>
           <TouchableOpacity onPress={handleLoginPress}>
-            <Text className="text-base text-gray-400">Log in</Text>
+            <Text className="text-base font-bold text-fuschia-rodeo-dust">
+              Log in
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
