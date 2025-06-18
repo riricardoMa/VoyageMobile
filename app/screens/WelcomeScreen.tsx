@@ -3,6 +3,7 @@ import { View, Text, Alert } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AppStackParamList } from "@app/types/navigation";
 import { PrimaryButton, SecondaryButton } from "@app/components/ui";
+import { Welcome } from "@app/components/svg/Welcome";
 
 type WelcomeScreenProps = NativeStackScreenProps<AppStackParamList, "Welcome">;
 
@@ -22,15 +23,7 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
     <View className="flex-1 items-center justify-center bg-fuschia-rodeo-dust/20 px-6">
       {/* Welcome Text */}
       <View className="mb-16 items-center">
-        <Text className="text-center text-6xl font-bold leading-tight text-fuschia-rodeo-dust">
-          Welcome
-        </Text>
-        <Text className="text-center text-6xl font-bold leading-tight text-fuschia-rodeo-dust">
-          to
-        </Text>
-        <Text className="text-center text-6xl font-bold leading-tight text-fuschia-rodeo-dust">
-          Voyage
-        </Text>
+        <Welcome />
       </View>
 
       {/* Action Buttons */}
