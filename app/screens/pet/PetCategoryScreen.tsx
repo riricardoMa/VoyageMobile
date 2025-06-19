@@ -34,7 +34,7 @@ export default function PetCategoryScreen({
         </View>
 
         {/* Pet Category Cards */}
-        <View className="mb-8 flex-row justify-center gap-6 px-4">
+        <View className="my-[20px] flex-row justify-center gap-6 px-4">
           <PetCategoryCard
             title="Dog"
             image={require("@app/assets/pet/dog-image.png")}
@@ -49,11 +49,8 @@ export default function PetCategoryScreen({
           />
         </View>
 
-        {/* Spacer to push button to bottom */}
-        <View className="flex-1" />
-
         {/* Next Button */}
-        <View className="px-4 pb-6">
+        <View className="px-4 pt-3">
           <SecondaryButton
             title="Next"
             onPress={handleNext}

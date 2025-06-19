@@ -289,14 +289,14 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
         </View>
 
         {/* Photo Upload Area */}
-        <View className="w-full items-center justify-center">
-          <View className="border-secondary h-[354px] w-[354px] items-center justify-center gap-6 rounded-xl border-2 border-dashed">
+        <View className="my-4 w-full items-center justify-center">
+          <View className="border-secondary h-[354px] w-[354px] items-center justify-center gap-6 rounded-xl border-2 border-dashed border-[#D4DBE3]">
             <View className="w-full flex-1">{renderPhotoUploadArea()}</View>
           </View>
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row gap-3 px-4 pt-3">
+        <View className="mt-3 flex-row gap-3 px-4 py-3">
           <View className="flex-1">
             <TertiaryButton
               title="Back"
