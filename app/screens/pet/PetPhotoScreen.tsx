@@ -23,6 +23,7 @@ import type {
   MediaFile,
   UploadOptions,
 } from "@app/services/upload/types/UploadTypes";
+import { usePetRegistrationProgress } from "@app/state/hooks/usePetRegistration";
 
 type PetPhotoScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -46,6 +47,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
   const existingPhoto = usePetRegistrationStore(selectPetPhoto);
   const setPetPhoto = usePetRegistrationStore(state => state.setPetPhoto);
   const clearPetPhoto = usePetRegistrationStore(state => state.clearPetPhoto);
+  const { nextStep, previousStep } = usePetRegistrationProgress();
 
   // Upload options for pet photos
   const uploadOptions: UploadOptions = {
@@ -60,13 +62,15 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
 
   const handleNext = useCallback(() => {
     if (existingPhoto?.success) {
+      nextStep();
       navigation.navigate("PetSex");
     }
-  }, [existingPhoto, navigation]);
+  }, [existingPhoto, navigation, nextStep]);
 
   const handleBack = useCallback(() => {
+    previousStep();
     navigation.goBack();
-  }, [navigation]);
+  }, [navigation, previousStep]);
 
   const handleImageSelection = useCallback(
     async (source: "camera" | "library") => {
