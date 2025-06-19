@@ -282,8 +282,10 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1">
         {/* Title */}
-        <View className="px-4 py-5">
-          <Text className="text-primary text-2xl font-bold">Headphoto</Text>
+        <View className="mb-[10px] px-4 pt-6">
+          <Text className="my-5 text-2xl font-bold text-[#333333]">
+            Headphoto
+          </Text>
         </View>
 
         {/* Photo Upload Area */}
