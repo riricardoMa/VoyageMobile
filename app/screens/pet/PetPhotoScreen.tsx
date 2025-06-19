@@ -194,64 +194,47 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
     if (hasValidPhoto) {
       // Show uploaded photo state
       return (
-        <View className="border-secondary flex-1 items-center justify-center rounded-xl border-2 border-dashed p-6">
+        <TouchableOpacity
+          onPress={handleRetakePhoto}
+          className="relative aspect-square w-full max-w-[354px]"
+          activeOpacity={0.8}
+        >
+          <Image
+            source={{ uri: existingPhoto.publicUrl }}
+            className="h-full w-full rounded-xl bg-gray-200"
+            resizeMode="cover"
+            onError={() => {
+              // If image fails to load, clear the photo state to show upload area again
+              clearPetPhoto();
+              Alert.alert(
+                "Image Load Error",
+                "The uploaded image could not be displayed. Please try uploading again.",
+                [{ text: "OK" }]
+              );
+            }}
+          />
           <TouchableOpacity
-            onPress={handleRetakePhoto}
-            className="relative aspect-square w-full max-w-[354px]"
-            activeOpacity={0.8}
+            onPress={handleRemovePhoto}
+            className="absolute right-2 top-2 h-8 w-8 items-center justify-center rounded-full bg-black/50"
           >
-            <Image
-              source={{ uri: existingPhoto.publicUrl }}
-              className="h-full w-full rounded-xl bg-gray-200"
-              resizeMode="cover"
-              onError={() => {
-                // If image fails to load, clear the photo state to show upload area again
-                clearPetPhoto();
-                Alert.alert(
-                  "Image Load Error",
-                  "The uploaded image could not be displayed. Please try uploading again.",
-                  [{ text: "OK" }]
-                );
-              }}
-            />
-            <TouchableOpacity
-              onPress={handleRemovePhoto}
-              className="absolute right-2 top-2 h-8 w-8 items-center justify-center rounded-full bg-black/50"
-            >
-              <Close color="white" />
-            </TouchableOpacity>
+            <Close color="white" />
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       );
     }
 
     if (isLoadingState) {
       // Show loading state
       return (
-        <View className="border-secondary flex-1 items-center justify-center rounded-xl border-2 border-dashed p-6">
-          <View className="w-full max-w-xs items-center gap-4">
-            <Text className="text-primary text-center text-lg font-bold">
-              {isProcessing && !uploadingFileId
-                ? "Processing photo..."
-                : "Uploading photo..."}
-            </Text>
-            <Text className="text-center text-sm text-gray-600">
-              Please wait while we prepare your pet's photo
-            </Text>
-            <View className="w-full px-4">
-              <UploadProgressBar progress={uploadProgress} />
-            </View>
-            <Text className="text-primary text-sm font-bold">
-              {Math.round(uploadProgress)}%
-            </Text>
-          </View>
+        <View className="h-full w-full justify-center px-4">
+          <UploadProgressBar progress={uploadProgress} />
         </View>
       );
     }
 
     // Show initial upload state
     return (
-      <View className="border-secondary flex-1 items-center justify-center gap-6 rounded-xl border-2 border-dashed px-6 py-14">
+      <View>
         <View className="items-center gap-2">
           <View className="h-6">
             <Text className="text-primary text-center text-lg font-bold">
@@ -300,14 +283,15 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
       <View className="flex-1">
         {/* Title */}
         <View className="px-4 py-5">
-          <Text className="text-primary text-2xl font-bold">Pet Photo</Text>
-          <Text className="mt-1 text-sm text-gray-600">
-            Add a beautiful photo of your pet
-          </Text>
+          <Text className="text-primary text-2xl font-bold">Headphoto</Text>
         </View>
 
         {/* Photo Upload Area */}
-        <View className="flex-1 px-4 pb-4">{renderPhotoUploadArea()}</View>
+        <View className="w-full items-center justify-center">
+          <View className="border-secondary h-[354px] w-[354px] items-center justify-center gap-6 rounded-xl border-2 border-dashed">
+            <View className="w-full flex-1">{renderPhotoUploadArea()}</View>
+          </View>
+        </View>
 
         {/* Action Buttons */}
         <View className="flex-row gap-3 px-4 pb-3">
