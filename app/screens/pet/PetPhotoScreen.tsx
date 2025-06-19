@@ -1,14 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
   SafeAreaView,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PetRegistrationStackParamList } from "@app/types/navigation";
-import { SecondaryButton, TertiaryButton } from "@app/components/ui";
+import {
+  SecondaryButton,
+  TertiaryButton,
+  LoadingSpinner,
+} from "@app/components/ui";
+import { useUpload } from "@app/services/upload";
+import {
+  usePetRegistrationStore,
+  selectPetPhoto,
+} from "@app/state/stores/petRegistrationStore";
+import type {
+  MediaFile,
+  UploadOptions,
+} from "@app/services/upload/types/UploadTypes";
 
 type PetPhotoScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -16,44 +30,167 @@ type PetPhotoScreenProps = NativeStackScreenProps<
 >;
 
 export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  // Local state for UI
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleNext = () => {
-    if (selectedPhoto) {
-      // TODO: Store selected photo in state/context
-      navigation.navigate("PetBasicInfo");
+  // Upload service hook
+  const {
+    pickImage,
+    uploadFile,
+    isUploading,
+    error: uploadError,
+    clearError,
+  } = useUpload();
+
+  // Pet registration store
+  const existingPhoto = usePetRegistrationStore(selectPetPhoto);
+  const setPetPhoto = usePetRegistrationStore(state => state.setPetPhoto);
+  const clearPetPhoto = usePetRegistrationStore(state => state.clearPetPhoto);
+
+  // Upload options for pet photos
+  const uploadOptions: UploadOptions = {
+    folder: "pets/photos",
+    resize: {
+      width: 1024,
+      height: 1024,
+      quality: 0.8,
+    },
+    compress: true,
+  };
+
+  const handleNext = useCallback(() => {
+    if (existingPhoto?.success) {
+      navigation.navigate("PetSex");
     }
-  };
+  }, [existingPhoto, navigation]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     navigation.goBack();
-  };
+  }, [navigation]);
 
-  const handleTakePhoto = () => {
-    // TODO: Implement camera functionality
-    // For now, simulate photo selection with a placeholder
-    setSelectedPhoto("camera_photo");
-  };
+  const handleImageSelection = useCallback(
+    async (source: "camera" | "library") => {
+      try {
+        setIsProcessing(true);
+        clearError();
 
-  const handleAddFromLibrary = () => {
-    // TODO: Implement photo library functionality
-    // For now, simulate photo selection with a placeholder
-    setSelectedPhoto("library_photo");
-  };
+        // Pick image based on source
+        const mediaFile: MediaFile | null = await pickImage(uploadOptions);
+
+        if (!mediaFile) {
+          setIsProcessing(false);
+          return; // User cancelled
+        }
+
+        // Upload the selected file
+        const uploadResult = await uploadFile(mediaFile, uploadOptions);
+
+        if (uploadResult.success) {
+          // Store the upload result in the pet registration store
+          setPetPhoto(uploadResult);
+        } else {
+          Alert.alert(
+            "Upload Failed",
+            uploadResult.error || "Failed to upload photo. Please try again.",
+            [{ text: "OK" }]
+          );
+        }
+      } catch (error) {
+        console.error("Error selecting/uploading image:", error);
+        Alert.alert(
+          "Error",
+          "An unexpected error occurred. Please try again.",
+          [{ text: "OK" }]
+        );
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [pickImage, uploadFile, uploadOptions, setPetPhoto, clearError]
+  );
+
+  const handleTakePhoto = useCallback(() => {
+    handleImageSelection("camera");
+  }, [handleImageSelection]);
+
+  const handleAddFromLibrary = useCallback(() => {
+    handleImageSelection("library");
+  }, [handleImageSelection]);
+
+  const handleRetakePhoto = useCallback(() => {
+    Alert.alert(
+      "Replace Photo",
+      "Would you like to take a new photo or choose from library?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Take Photo", onPress: handleTakePhoto },
+        { text: "Choose from Library", onPress: handleAddFromLibrary },
+      ]
+    );
+  }, [handleTakePhoto, handleAddFromLibrary]);
+
+  const handleRemovePhoto = useCallback(() => {
+    Alert.alert("Remove Photo", "Are you sure you want to remove this photo?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Remove",
+        style: "destructive",
+        onPress: () => clearPetPhoto(),
+      },
+    ]);
+  }, [clearPetPhoto]);
 
   const renderPhotoUploadArea = () => {
-    if (selectedPhoto) {
+    const isLoadingState = isUploading || isProcessing;
+
+    if (existingPhoto?.success && existingPhoto.publicUrl) {
       // Show uploaded photo state
       return (
-        <View className="flex-1 items-center justify-end rounded-xl border-2 border-dashed border-[#D4DBE3] p-6">
-          <View className="absolute left-0.5 top-0.5 h-[354px] w-[354px] rounded-xl bg-gray-300">
-            {/* Placeholder for actual image */}
-            <View className="flex-1 items-center justify-center rounded-xl bg-gray-200">
-              <Text className="text-lg text-gray-500">Photo Preview</Text>
-              <Text className="mt-2 text-sm text-gray-400">
-                {selectedPhoto}
-              </Text>
+        <View className="border-secondary flex-1 items-center justify-center rounded-xl border-2 border-dashed p-6">
+          <View className="relative aspect-square w-full max-w-[354px]">
+            <Image
+              source={{ uri: existingPhoto.publicUrl }}
+              className="h-full w-full rounded-xl"
+              resizeMode="cover"
+            />
+
+            {/* Overlay with actions */}
+            <View className="absolute inset-0 rounded-xl bg-black/40 opacity-0 active:opacity-100">
+              <View className="flex-1 items-center justify-center gap-3">
+                <TouchableOpacity
+                  onPress={handleRetakePhoto}
+                  className="rounded-lg bg-white/90 px-4 py-2"
+                >
+                  <Text className="text-sm font-bold text-gray-800">
+                    Change Photo
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={handleRemovePhoto}
+                  className="rounded-lg bg-red-500/90 px-4 py-2"
+                >
+                  <Text className="text-sm font-bold text-white">Remove</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+          </View>
+        </View>
+      );
+    }
+
+    if (isLoadingState) {
+      // Show loading state
+      return (
+        <View className="border-secondary flex-1 items-center justify-center rounded-xl border-2 border-dashed p-6">
+          <View className="items-center gap-4">
+            <LoadingSpinner size="large" />
+            <Text className="text-primary text-center text-lg font-bold">
+              {isProcessing ? "Processing photo..." : "Uploading photo..."}
+            </Text>
+            <Text className="text-center text-sm text-gray-600">
+              Please wait while we prepare your pet's photo
+            </Text>
           </View>
         </View>
       );
@@ -61,14 +198,14 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
 
     // Show initial upload state
     return (
-      <View className="items-center gap-6 rounded-xl border-2 border-dashed border-[#D4DBE3] px-6 py-14">
+      <View className="border-secondary items-center gap-6 rounded-xl border-2 border-dashed px-6 py-14">
         <View className="items-center gap-2">
           <View className="h-6">
-            <Text className="text-center text-lg font-bold text-[#333333]">
+            <Text className="text-primary text-center text-lg font-bold">
               Add a photo
             </Text>
           </View>
-          <Text className="text-center text-sm text-[#333333]">
+          <Text className="text-center text-sm text-gray-700">
             Take a photo or upload one from your library
           </Text>
         </View>
@@ -76,30 +213,47 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
         <View className="flex-row gap-3">
           <TouchableOpacity
             onPress={handleTakePhoto}
-            className="h-10 items-center justify-center rounded-xl bg-iris-parchment px-4"
+            className="bg-background h-10 items-center justify-center rounded-xl px-4"
+            disabled={isLoadingState}
           >
-            <Text className="text-sm font-bold text-[#333333]">Take photo</Text>
+            <Text className="text-primary text-sm font-bold">Take photo</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleAddFromLibrary}
-            className="h-10 items-center justify-center rounded-xl bg-iris-parchment px-4"
+            className="bg-background h-10 items-center justify-center rounded-xl px-4"
+            disabled={isLoadingState}
           >
-            <Text className="text-sm font-bold text-[#333333]">
+            <Text className="text-primary text-sm font-bold">
               Add from library
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* Error message */}
+        {uploadError && (
+          <View className="mt-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2">
+            <Text className="text-center text-sm text-red-600">
+              {uploadError}
+            </Text>
+          </View>
+        )}
       </View>
     );
   };
+
+  const hasValidPhoto = existingPhoto?.success && existingPhoto.publicUrl;
+  const isDisabled = isUploading || isProcessing || !hasValidPhoto;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1">
         {/* Title */}
         <View className="px-4 py-5">
-          <Text className="text-2xl font-bold text-[#333333]">Headphoto</Text>
+          <Text className="text-primary text-2xl font-bold">Pet Photo</Text>
+          <Text className="mt-1 text-sm text-gray-600">
+            Add a beautiful photo of your pet
+          </Text>
         </View>
 
         {/* Photo Upload Area */}
@@ -108,13 +262,17 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
         {/* Action Buttons */}
         <View className="flex-row gap-3 px-4 pb-3">
           <View className="flex-1">
-            <TertiaryButton title="Back" onPress={handleBack} />
+            <TertiaryButton
+              title="Back"
+              onPress={handleBack}
+              disabled={isUploading || isProcessing}
+            />
           </View>
           <View className="flex-1">
             <SecondaryButton
               title="Next"
               onPress={handleNext}
-              disabled={!selectedPhoto}
+              disabled={isDisabled}
             />
           </View>
         </View>
