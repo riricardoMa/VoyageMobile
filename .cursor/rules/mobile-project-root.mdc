@@ -14,9 +14,9 @@ VoyageMobile is a React Native + Expo mobile application built with TypeScript, 
 - **Language**: TypeScript with strict configuration
 - **UI Framework**: NativeWind (Tailwind CSS for React Native)
 - **Navigation**: React Navigation v7 (Stack, Bottom Tabs, Native Stack)
-- **State Management**: Custom state management with React hooks and MMKV storage
+- **State Management**: Custom state management with React hooks and AsyncStorage for persistence
 - **Backend**: Supabase integration
-- **Storage**: React Native MMKV for fast storage, AsyncStorage for compatibility
+- **Storage**: AsyncStorage for persistent storage
 
 ## SOLID Principles Implementation
 
@@ -218,7 +218,7 @@ app/
 - Implement consistent interfaces using `IBaseStore<T>`
 - Use TypeScript for all state definitions
 - Implement proper error handling in state actions
-- Use MMKV for persistent state when appropriate
+- Use AsyncStorage for persistent state when appropriate
 
 ### State Organization
 - **stores/**: Individual state stores (user, app settings, navigation)

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import type { PetRegistrationStackParamList } from "@app/types/navigation";
 import {
   SecondaryButton,
   TertiaryButton,
-  LoadingSpinner,
+  UploadProgressBar,
 } from "@app/components/ui";
 import { useUpload } from "@app/services/upload";
 import {
@@ -24,6 +24,7 @@ import type {
   UploadOptions,
 } from "@app/services/upload/types/UploadTypes";
 import { usePetRegistrationProgress } from "@app/state/hooks/usePetRegistration";
+import { Close } from "@app/components/svg";
 
 type PetPhotoScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -33,6 +34,8 @@ type PetPhotoScreenProps = NativeStackScreenProps<
 export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
   // Local state for UI
   const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadingFileId, setUploadingFileId] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Upload service hook
   const {
@@ -50,6 +53,27 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
   const setPetPhoto = usePetRegistrationStore(state => state.setPetPhoto);
   const clearPetPhoto = usePetRegistrationStore(state => state.clearPetPhoto);
   const { nextStep, previousStep } = usePetRegistrationProgress();
+
+  useEffect(() => {
+    if (!uploadingFileId) {
+      setUploadProgress(0);
+      return;
+    }
+
+    const progressInterval = setInterval(() => {
+      const progress = getProgress(uploadingFileId);
+      if (progress) {
+        setUploadProgress(progress.progress);
+      }
+      if (progress?.progress === 100) {
+        clearInterval(progressInterval);
+      }
+    }, 500); // Poll every 500ms
+
+    return () => {
+      clearInterval(progressInterval);
+    };
+  }, [uploadingFileId, getProgress]);
 
   // Upload options for pet photos - use public bucket
   const uploadOptions: UploadOptions = {
@@ -80,6 +104,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
       try {
         setIsProcessing(true);
         clearError();
+        setUploadingFileId(null);
 
         // Pick image based on source
         const mediaFile: MediaFile | null =
@@ -91,6 +116,8 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
           setIsProcessing(false);
           return; // User cancelled
         }
+
+        setUploadingFileId(mediaFile.id);
 
         // Upload the selected file
         const uploadResult = await uploadFile(mediaFile, uploadOptions);
@@ -113,6 +140,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
         );
       } finally {
         setIsProcessing(false);
+        setUploadingFileId(null);
       }
     },
     [
@@ -151,22 +179,27 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
       {
         text: "Remove",
         style: "destructive",
-        onPress: () => clearPetPhoto(),
+        onPress: () => {
+          clearPetPhoto();
+        },
       },
     ]);
   }, [clearPetPhoto]);
 
   const hasValidPhoto = existingPhoto?.success && existingPhoto.publicUrl;
   const isDisabled = isUploading || isProcessing || !hasValidPhoto;
+  const isLoadingState = isUploading || isProcessing || !!uploadingFileId;
 
   const renderPhotoUploadArea = () => {
-    const isLoadingState = isUploading || isProcessing;
-
     if (hasValidPhoto) {
       // Show uploaded photo state
       return (
         <View className="border-secondary flex-1 items-center justify-center rounded-xl border-2 border-dashed p-6">
-          <View className="relative aspect-square w-full max-w-[354px]">
+          <TouchableOpacity
+            onPress={handleRetakePhoto}
+            className="relative aspect-square w-full max-w-[354px]"
+            activeOpacity={0.8}
+          >
             <Image
               source={{ uri: existingPhoto.publicUrl }}
               className="h-full w-full rounded-xl bg-gray-200"
@@ -181,30 +214,13 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
                 );
               }}
             />
-
-            {/* Overlay with action buttons */}
-            <View className="absolute inset-0 rounded-xl bg-black/20">
-              <View className="flex-1 items-center justify-center gap-3">
-                <TouchableOpacity
-                  onPress={handleRetakePhoto}
-                  className="rounded-lg bg-white/90 px-4 py-2"
-                  disabled={isLoadingState}
-                >
-                  <Text className="text-sm font-bold text-gray-800">
-                    Change Photo
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={handleRemovePhoto}
-                  className="bg-primary rounded-lg px-4 py-2"
-                  disabled={isLoadingState}
-                >
-                  <Text className="text-sm font-bold text-white">Remove</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+            <TouchableOpacity
+              onPress={handleRemovePhoto}
+              className="absolute right-2 top-2 h-8 w-8 items-center justify-center rounded-full bg-black/50"
+            >
+              <Close color="white" />
+            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -213,13 +229,20 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
       // Show loading state
       return (
         <View className="border-secondary flex-1 items-center justify-center rounded-xl border-2 border-dashed p-6">
-          <View className="items-center gap-4">
-            <LoadingSpinner size="large" />
+          <View className="w-full max-w-xs items-center gap-4">
             <Text className="text-primary text-center text-lg font-bold">
-              {isProcessing ? "Processing photo..." : "Uploading photo..."}
+              {isProcessing && !uploadingFileId
+                ? "Processing photo..."
+                : "Uploading photo..."}
             </Text>
             <Text className="text-center text-sm text-gray-600">
               Please wait while we prepare your pet's photo
+            </Text>
+            <View className="w-full px-4">
+              <UploadProgressBar progress={uploadProgress} />
+            </View>
+            <Text className="text-primary text-sm font-bold">
+              {Math.round(uploadProgress)}%
             </Text>
           </View>
         </View>
@@ -228,7 +251,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
 
     // Show initial upload state
     return (
-      <View className="border-secondary items-center gap-6 rounded-xl border-2 border-dashed px-6 py-14">
+      <View className="border-secondary flex-1 items-center justify-center gap-6 rounded-xl border-2 border-dashed px-6 py-14">
         <View className="items-center gap-2">
           <View className="h-6">
             <Text className="text-primary text-center text-lg font-bold">
@@ -240,21 +263,21 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
           </Text>
         </View>
 
-        <View className="flex-row gap-3">
+        <View className="w-full max-w-[200px] gap-3">
           <TouchableOpacity
             onPress={handleTakePhoto}
-            className="bg-background h-10 items-center justify-center rounded-xl px-4"
+            className="bg-background h-12 items-center justify-center rounded-xl px-4"
             disabled={isLoadingState}
           >
-            <Text className="text-primary text-sm font-bold">Take photo</Text>
+            <Text className="text-sm font-bold text-gray-800">Take photo</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleAddFromLibrary}
-            className="bg-background h-10 items-center justify-center rounded-xl px-4"
+            className="bg-background h-12 items-center justify-center rounded-xl px-4"
             disabled={isLoadingState}
           >
-            <Text className="text-primary text-sm font-bold">
+            <Text className="text-sm font-bold text-gray-800">
               Add from library
             </Text>
           </TouchableOpacity>
@@ -292,7 +315,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
             <TertiaryButton
               title="Back"
               onPress={handleBack}
-              disabled={isUploading || isProcessing}
+              disabled={isLoadingState}
             />
           </View>
           <View className="flex-1">
