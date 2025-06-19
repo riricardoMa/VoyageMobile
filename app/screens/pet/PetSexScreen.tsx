@@ -2,7 +2,8 @@ import React from "react";
 import { View, Text, Alert } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PetRegistrationStackParamList } from "@app/types/navigation";
-import { PrimaryButton, Button } from "@app/components/ui";
+import { PrimaryButton, Button, TertiaryButton } from "@app/components/ui";
+import { PetRegistrationLayout } from "@app/components/layout";
 
 type PetSexScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -31,18 +32,24 @@ export default function PetSexScreen({ navigation }: PetSexScreenProps) {
   };
 
   return (
-    <View className="bg-background flex-1 items-center justify-center px-6">
-      <Text className="text-primary mb-8 text-2xl font-bold">
-        Pet Sex - Step 5/5
-      </Text>
-      <Text className="mb-8 text-center text-base text-gray-600">
-        TODO: Implement boy/girl selection UI
-      </Text>
-
-      <View className="w-full flex-col gap-4">
-        <PrimaryButton title="Register" onPress={handleRegister} />
-        <Button title="Back" variant="outline" onPress={handleBack} />
+    <PetRegistrationLayout
+      title="Sex"
+      footer={
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <TertiaryButton title="Back" onPress={handleBack} />
+          </View>
+          <View className="flex-1">
+            <PrimaryButton title="Register" onPress={handleRegister} />
+          </View>
+        </View>
+      }
+    >
+      <View className="flex-1 items-center justify-center">
+        <Text className="mb-8 text-center text-base text-gray-600">
+          TODO: Implement boy/girl selection UI
+        </Text>
       </View>
-    </View>
+    </PetRegistrationLayout>
   );
 }

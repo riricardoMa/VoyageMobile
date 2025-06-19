@@ -1,12 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PetRegistrationStackParamList } from "@app/types/navigation";
 import {
@@ -25,6 +18,7 @@ import type {
 } from "@app/services/upload/types/UploadTypes";
 import { usePetRegistrationProgress } from "@app/state/hooks/usePetRegistration";
 import { Close } from "@app/components/svg";
+import { PetRegistrationLayout } from "@app/components/layout";
 
 type PetPhotoScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -279,24 +273,10 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1">
-        {/* Title */}
-        <View className="mb-[10px] px-4 pt-6">
-          <Text className="my-5 text-2xl font-bold text-[#333333]">
-            Headphoto
-          </Text>
-        </View>
-
-        {/* Photo Upload Area */}
-        <View className="my-4 w-full items-center justify-center">
-          <View className="border-secondary h-[354px] w-[354px] items-center justify-center gap-6 rounded-xl border-2 border-dashed border-[#D4DBE3]">
-            <View className="w-full flex-1">{renderPhotoUploadArea()}</View>
-          </View>
-        </View>
-
-        {/* Action Buttons */}
-        <View className="mt-3 flex-row gap-3 px-4 py-3">
+    <PetRegistrationLayout
+      title="Headphoto"
+      footer={
+        <View className="flex-row gap-3">
           <View className="flex-1">
             <TertiaryButton
               title="Back"
@@ -312,7 +292,13 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
             />
           </View>
         </View>
+      }
+    >
+      <View className="my-4 w-full items-center justify-center">
+        <View className="border-secondary h-[354px] w-[354px] items-center justify-center gap-6 rounded-xl border-2 border-dashed border-[#D4DBE3]">
+          <View className="w-full flex-1">{renderPhotoUploadArea()}</View>
+        </View>
       </View>
-    </SafeAreaView>
+    </PetRegistrationLayout>
   );
 }
