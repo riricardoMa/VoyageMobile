@@ -37,6 +37,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
   // Upload service hook
   const {
     pickImage,
+    pickImageFromCamera,
     uploadFile,
     isUploading,
     error: uploadError,
@@ -49,7 +50,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
   const clearPetPhoto = usePetRegistrationStore(state => state.clearPetPhoto);
   const { nextStep, previousStep } = usePetRegistrationProgress();
 
-  // Upload options for pet photos
+  // Upload options for pet photos - use public bucket
   const uploadOptions: UploadOptions = {
     folder: "pets/photos",
     resize: {
@@ -58,6 +59,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
       quality: 0.8,
     },
     compress: true,
+    usePublicBucket: true, // Use public bucket for pet photos
   };
 
   const handleNext = useCallback(() => {
@@ -79,19 +81,32 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
         clearError();
 
         // Pick image based on source
-        const mediaFile: MediaFile | null = await pickImage(uploadOptions);
+        const mediaFile: MediaFile | null =
+          source === "camera"
+            ? await pickImageFromCamera(uploadOptions)
+            : await pickImage(uploadOptions);
 
         if (!mediaFile) {
           setIsProcessing(false);
           return; // User cancelled
         }
 
+        console.log("📸 Selected image:", {
+          id: mediaFile.id,
+          name: mediaFile.name,
+          size: mediaFile.size,
+          type: mediaFile.type,
+        });
+
         // Upload the selected file
         const uploadResult = await uploadFile(mediaFile, uploadOptions);
+
+        console.log("📤 Upload result:", uploadResult);
 
         if (uploadResult.success) {
           // Store the upload result in the pet registration store
           setPetPhoto(uploadResult);
+          console.log("✅ Photo stored in state:", uploadResult);
         } else {
           Alert.alert(
             "Upload Failed",
@@ -110,7 +125,14 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
         setIsProcessing(false);
       }
     },
-    [pickImage, uploadFile, uploadOptions, setPetPhoto, clearError]
+    [
+      pickImage,
+      pickImageFromCamera,
+      uploadFile,
+      uploadOptions,
+      setPetPhoto,
+      clearError,
+    ]
   );
 
   const handleTakePhoto = useCallback(() => {
@@ -144,26 +166,42 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
     ]);
   }, [clearPetPhoto]);
 
+  const hasValidPhoto = existingPhoto?.success && existingPhoto.publicUrl;
+  const isDisabled = isUploading || isProcessing || !hasValidPhoto;
+
   const renderPhotoUploadArea = () => {
     const isLoadingState = isUploading || isProcessing;
 
-    if (existingPhoto?.success && existingPhoto.publicUrl) {
+    if (hasValidPhoto) {
       // Show uploaded photo state
       return (
         <View className="border-secondary flex-1 items-center justify-center rounded-xl border-2 border-dashed p-6">
           <View className="relative aspect-square w-full max-w-[354px]">
             <Image
               source={{ uri: existingPhoto.publicUrl }}
-              className="h-full w-full rounded-xl"
+              className="h-full w-full rounded-xl bg-gray-200"
               resizeMode="cover"
+              onLoad={() => console.log("✅ Image loaded successfully")}
+              onError={error => {
+                console.log("❌ Image load error:", error);
+                console.log("❌ Failed URL:", existingPhoto.publicUrl);
+                // If image fails to load, clear the photo state to show upload area again
+                clearPetPhoto();
+                Alert.alert(
+                  "Image Load Error",
+                  "The uploaded image could not be displayed. Please try uploading again.",
+                  [{ text: "OK" }]
+                );
+              }}
             />
 
-            {/* Overlay with actions */}
-            <View className="absolute inset-0 rounded-xl bg-black/40 opacity-0 active:opacity-100">
+            {/* Overlay with action buttons */}
+            <View className="absolute inset-0 rounded-xl bg-black/20">
               <View className="flex-1 items-center justify-center gap-3">
                 <TouchableOpacity
                   onPress={handleRetakePhoto}
                   className="rounded-lg bg-white/90 px-4 py-2"
+                  disabled={isLoadingState}
                 >
                   <Text className="text-sm font-bold text-gray-800">
                     Change Photo
@@ -172,7 +210,8 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
 
                 <TouchableOpacity
                   onPress={handleRemovePhoto}
-                  className="rounded-lg bg-red-500/90 px-4 py-2"
+                  className="bg-primary rounded-lg px-4 py-2"
+                  disabled={isLoadingState}
                 >
                   <Text className="text-sm font-bold text-white">Remove</Text>
                 </TouchableOpacity>
@@ -245,9 +284,6 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
       </View>
     );
   };
-
-  const hasValidPhoto = existingPhoto?.success && existingPhoto.publicUrl;
-  const isDisabled = isUploading || isProcessing || !hasValidPhoto;
 
   return (
     <SafeAreaView className="flex-1 bg-white">

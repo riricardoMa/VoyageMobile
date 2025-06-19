@@ -18,6 +18,7 @@ import type {
 interface UploadContextType {
   // File picking methods
   pickImage: (options?: UploadOptions) => Promise<MediaFile | null>;
+  pickImageFromCamera: (options?: UploadOptions) => Promise<MediaFile | null>;
   pickVideo: (options?: UploadOptions) => Promise<MediaFile | null>;
   pickMedia: (options?: UploadOptions) => Promise<MediaFile | null>;
 
@@ -48,15 +49,17 @@ interface UploadContextType {
 const UploadContext = createContext<UploadContextType | undefined>(undefined);
 
 interface UploadProviderProps extends PropsWithChildren {
-  bucketName?: string;
+  privateBucketName?: string;
+  publicBucketName?: string;
 }
 
 export const UploadProvider = ({
   children,
-  bucketName,
+  privateBucketName,
+  publicBucketName,
 }: UploadProviderProps) => {
   const [uploadService] = useState<IUploadService>(
-    () => new SupabaseUploadService(bucketName)
+    () => new SupabaseUploadService(privateBucketName, publicBucketName)
   );
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<
@@ -77,6 +80,21 @@ export const UploadProvider = ({
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Error picking image";
+        setError(errorMessage);
+        return null;
+      }
+    },
+    [uploadService, clearError]
+  );
+
+  const pickImageFromCamera = useCallback(
+    async (options?: UploadOptions) => {
+      try {
+        clearError();
+        return await uploadService.pickImageFromCamera(options);
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Error taking photo";
         setError(errorMessage);
         return null;
       }
@@ -239,6 +257,7 @@ export const UploadProvider = ({
     <UploadContext.Provider
       value={{
         pickImage,
+        pickImageFromCamera,
         pickVideo,
         pickMedia,
         uploadFile,

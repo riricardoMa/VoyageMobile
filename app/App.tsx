@@ -202,12 +202,18 @@ function RootNavigator() {
 }
 
 export default function App() {
-  const bucketName = process.env.EXPO_PUBLIC_SUPABASE_BUCKET_NAME || "media";
+  const privateBucketName =
+    process.env.EXPO_PUBLIC_SUPABASE_BUCKET_NAME || "media-staging";
+  const publicBucketName =
+    process.env.EXPO_PUBLIC_SUPABASE_PUBLIC_BUCKET_NAME || "media-public";
 
   return (
     <I18nProvider>
       <AuthProvider>
-        <UploadProvider bucketName={bucketName}>
+        <UploadProvider
+          privateBucketName={privateBucketName}
+          publicBucketName={publicBucketName}
+        >
           <NavigationContainer>
             <RootNavigator />
           </NavigationContainer>

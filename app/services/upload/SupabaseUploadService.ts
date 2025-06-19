@@ -18,12 +18,22 @@ import { MediaProcessor } from "./utils/MediaProcessor";
 export class SupabaseUploadService implements IUploadService {
   private mediaProcessor: MediaProcessor;
   private uploadProgress: Map<string, UploadProgress>;
-  private readonly bucketName: string;
+  private readonly privateBucketName: string;
+  private readonly publicBucketName: string;
 
-  constructor(bucketName: string = "media") {
+  constructor(
+    privateBucketName: string = "media",
+    publicBucketName: string = "media-public"
+  ) {
     this.mediaProcessor = new MediaProcessor();
     this.uploadProgress = new Map();
-    this.bucketName = bucketName;
+    this.privateBucketName = privateBucketName;
+    this.publicBucketName = publicBucketName;
+  }
+
+  // Helper method to get the correct bucket name
+  private getBucketName(usePublicBucket?: boolean): string {
+    return usePublicBucket ? this.publicBucketName : this.privateBucketName;
   }
 
   async pickImage(options?: UploadOptions): Promise<MediaFile | null> {
@@ -67,6 +77,52 @@ export class SupabaseUploadService implements IUploadService {
       return mediaFile;
     } catch (error) {
       console.error("Error picking image:", error);
+      throw error;
+    }
+  }
+
+  async pickImageFromCamera(
+    options?: UploadOptions
+  ): Promise<MediaFile | null> {
+    try {
+      // Request camera permissions
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        throw new Error("Camera permission denied");
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        quality: 1,
+        exif: false,
+      });
+
+      if (result.canceled || !result.assets[0]) return null;
+
+      const asset = result.assets[0];
+      let mediaFile: MediaFile = {
+        id: this.generateFileId(),
+        uri: asset.uri,
+        type: "image",
+        name: asset.fileName || `camera_image_${Date.now()}.jpg`,
+        size: asset.fileSize || 0,
+        mimeType: asset.mimeType || "image/jpeg",
+        width: asset.width,
+        height: asset.height,
+      };
+
+      // Process image if options provided
+      if (options?.resize) {
+        mediaFile = await this.mediaProcessor.resizeImage(
+          mediaFile,
+          options.resize
+        );
+      }
+
+      return mediaFile;
+    } catch (error) {
+      console.error("Error taking photo:", error);
       throw error;
     }
   }
@@ -174,6 +230,13 @@ export class SupabaseUploadService implements IUploadService {
       const folder = options?.folder || "uploads";
       const fileName = `${folder}/${file.id}_${file.name}`;
 
+      // Determine which bucket to use
+      const bucketName = this.getBucketName(options?.usePublicBucket);
+
+      console.log(
+        `📤 Uploading to ${options?.usePublicBucket ? "PUBLIC" : "PRIVATE"} bucket: ${bucketName}`
+      );
+
       // Read file as base64 for React Native
       const base64 = await FileSystem.readAsStringAsync(file.uri, {
         encoding: FileSystem.EncodingType.Base64,
@@ -186,13 +249,14 @@ export class SupabaseUploadService implements IUploadService {
 
       // Upload to Supabase Storage using ArrayBuffer
       const { error } = await supabase.storage
-        .from(this.bucketName)
+        .from(bucketName)
         .upload(fileName, arrayBuffer, {
           contentType: file.mimeType,
-          upsert: false,
+          upsert: true, // Allow overwrites
         });
 
       if (error) {
+        console.error("Supabase upload error:", error);
         this.updateProgress(file.id, {
           progress: 0,
           status: "error",
@@ -209,8 +273,49 @@ export class SupabaseUploadService implements IUploadService {
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from(this.bucketName)
+        .from(bucketName)
         .getPublicUrl(fileName);
+
+      if (!urlData?.publicUrl) {
+        const errorMessage = "Failed to generate public URL";
+        console.error(errorMessage);
+        this.updateProgress(file.id, {
+          progress: 0,
+          status: "error",
+          error: errorMessage,
+        });
+        return {
+          success: false,
+          fileId: file.id,
+          error: errorMessage,
+        };
+      }
+
+      // Test the public URL by making a HEAD request to ensure it's accessible
+      // Skip this test for public buckets as they should be accessible
+      if (!options?.usePublicBucket) {
+        try {
+          const response = await fetch(urlData.publicUrl, { method: "HEAD" });
+          if (!response.ok) {
+            throw new Error(
+              `Public URL not accessible: ${response.status} ${response.statusText}`
+            );
+          }
+        } catch (urlError) {
+          console.error("Public URL test failed:", urlError);
+          const errorMessage = `Uploaded file is not publicly accessible: ${urlError instanceof Error ? urlError.message : "Unknown error"}`;
+          this.updateProgress(file.id, {
+            progress: 0,
+            status: "error",
+            error: errorMessage,
+          });
+          return {
+            success: false,
+            fileId: file.id,
+            error: errorMessage,
+          };
+        }
+      }
 
       let thumbnailUrl: string | undefined;
 
@@ -220,6 +325,7 @@ export class SupabaseUploadService implements IUploadService {
           const thumbnail = await this.mediaProcessor.generateThumbnail(file);
           const thumbnailResult = await this.uploadFile(thumbnail, {
             folder: `${folder}/thumbnails`,
+            usePublicBucket: options.usePublicBucket, // Use same bucket for thumbnails
           });
           if (thumbnailResult.success) {
             thumbnailUrl = thumbnailResult.publicUrl;
@@ -231,6 +337,13 @@ export class SupabaseUploadService implements IUploadService {
 
       this.updateProgress(file.id, { progress: 100, status: "completed" });
 
+      console.log("✅ Upload successful:", {
+        fileId: file.id,
+        fileName,
+        bucket: bucketName,
+        publicUrl: urlData.publicUrl,
+      });
+
       return {
         success: true,
         fileId: file.id,
@@ -241,6 +354,7 @@ export class SupabaseUploadService implements IUploadService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
+      console.error("Upload failed:", error);
       this.updateProgress(file.id, {
         progress: 0,
         status: "error",
@@ -264,12 +378,17 @@ export class SupabaseUploadService implements IUploadService {
     return Promise.all(uploadPromises);
   }
 
-  async deleteFile(fileId: string): Promise<boolean> {
+  async deleteFile(
+    fileId: string,
+    options?: { usePublicBucket?: boolean }
+  ): Promise<boolean> {
     try {
+      const bucketName = this.getBucketName(options?.usePublicBucket);
+
       // Find the file path - this would need to be stored or tracked
       // For now, we'll assume the file path follows our naming convention
       const { data, error } = await supabase.storage
-        .from(this.bucketName)
+        .from(bucketName)
         .list("uploads", {
           search: fileId,
         });
@@ -280,7 +399,7 @@ export class SupabaseUploadService implements IUploadService {
 
       const filePath = `uploads/${data[0]?.name ?? "Unknown"}`;
       const { error: deleteError } = await supabase.storage
-        .from(this.bucketName)
+        .from(bucketName)
         .remove([filePath]);
 
       return !deleteError;

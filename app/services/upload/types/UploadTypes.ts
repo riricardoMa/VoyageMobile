@@ -26,6 +26,7 @@ export interface UploadOptions {
   };
   compress?: boolean;
   generateThumbnail?: boolean; // for videos
+  usePublicBucket?: boolean; // New: specify which bucket to use
 }
 
 export interface UploadResult {
@@ -40,6 +41,7 @@ export interface UploadResult {
 // Interface following ISP - only expose what consumers need
 export interface IUploadService {
   pickImage(options?: UploadOptions): Promise<MediaFile | null>;
+  pickImageFromCamera(options?: UploadOptions): Promise<MediaFile | null>;
   pickVideo(options?: UploadOptions): Promise<MediaFile | null>;
   pickMedia(options?: UploadOptions): Promise<MediaFile | null>;
   uploadFile(file: MediaFile, options?: UploadOptions): Promise<UploadResult>;
@@ -47,7 +49,10 @@ export interface IUploadService {
     files: MediaFile[],
     options?: UploadOptions
   ): Promise<UploadResult[]>;
-  deleteFile(fileId: string): Promise<boolean>;
+  deleteFile(
+    fileId: string,
+    options?: { usePublicBucket?: boolean }
+  ): Promise<boolean>;
   getUploadProgress(fileId: string): UploadProgress | null;
 }
 
