@@ -1,30 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PetRegistrationStackParamList } from "@app/types/navigation";
 import { PetCategoryCard, SecondaryButton } from "@app/components/ui";
+import { usePetCategory, usePetRegistrationProgress } from "@app/state";
 
 type PetCategoryScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
   "PetCategory"
 >;
 
-type PetCategory = "dog" | "cat" | null;
-
 export default function PetCategoryScreen({
   navigation,
 }: PetCategoryScreenProps) {
-  const [selectedCategory, setSelectedCategory] = useState<PetCategory>(null);
+  const { category, setPetCategory } = usePetCategory();
+  const { nextStep } = usePetRegistrationProgress();
 
   const handleNext = () => {
-    if (selectedCategory) {
-      // TODO: Store selected category in state/context
+    if (category) {
+      nextStep();
       navigation.navigate("PetPhoto");
     }
-  };
-
-  const handleCategorySelect = (category: PetCategory) => {
-    setSelectedCategory(category);
   };
 
   return (
@@ -42,14 +38,14 @@ export default function PetCategoryScreen({
           <PetCategoryCard
             title="Dog"
             image={require("@app/assets/pet/dog-image.png")}
-            selected={selectedCategory === "dog"}
-            onPress={() => handleCategorySelect("dog")}
+            selected={category === "dog"}
+            onPress={() => setPetCategory("dog")}
           />
           <PetCategoryCard
             title="Cat"
             image={require("@app/assets/pet/cat-image.png")}
-            selected={selectedCategory === "cat"}
-            onPress={() => handleCategorySelect("cat")}
+            selected={category === "cat"}
+            onPress={() => setPetCategory("cat")}
           />
         </View>
 
@@ -61,7 +57,7 @@ export default function PetCategoryScreen({
           <SecondaryButton
             title="Next"
             onPress={handleNext}
-            disabled={!selectedCategory}
+            disabled={!category}
           />
         </View>
       </View>
