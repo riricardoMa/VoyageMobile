@@ -14,29 +14,30 @@ export const PetRegistrationLayout: React.FC<PetRegistrationLayoutProps> = ({
 }) => {
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1">
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View className="flex-1">
-            {/* Header */}
-            <View className="mb-[10px] px-4 pt-6">
-              <Text className="my-5 text-2xl font-bold text-[#333333]">
-                {title}
-              </Text>
-            </View>
-
-            {/* Content */}
-            <View className="flex-1">{children}</View>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "space-between",
+        }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View>
+          {/* Header */}
+          <View className="mb-[10px] px-4 pt-6">
+            <Text className="my-5 text-2xl font-bold text-[#333333]">
+              {title}
+            </Text>
           </View>
-        </ScrollView>
 
-        {/* Footer (CTAs) */}
-        <View className="px-4 py-3">{footer}</View>
-      </View>
+          {/* Content */}
+          <View>{children}</View>
+
+          {/* Footer (CTAs) */}
+          <View className="px-4 py-3">{footer}</View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
