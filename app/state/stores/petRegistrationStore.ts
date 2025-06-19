@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { MMKV } from "react-native-mmkv";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type {
   PetRegistrationState,
   PetRegistrationActions,
@@ -10,22 +10,30 @@ import type {
 } from "@app/state/types/StoreTypes";
 import type { UploadResult } from "@app/services/upload/types/UploadTypes";
 
-// MMKV storage instance for persistence
-const storage = new MMKV({
-  id: "pet-registration-storage",
-});
-
-// Custom storage interface for Zustand persist middleware
-const mmkvStorage = {
-  getItem: (name: string) => {
-    const value = storage.getString(name);
-    return value ? JSON.parse(value) : null;
+// AsyncStorage interface for Zustand persist middleware
+const asyncStorage = {
+  getItem: async (name: string) => {
+    try {
+      const value = await AsyncStorage.getItem(name);
+      return value ? JSON.parse(value) : null;
+    } catch (error) {
+      console.warn("Failed to get item from AsyncStorage:", error);
+      return null;
+    }
   },
-  setItem: (name: string, value: unknown): void => {
-    storage.set(name, JSON.stringify(value));
+  setItem: async (name: string, value: unknown): Promise<void> => {
+    try {
+      await AsyncStorage.setItem(name, JSON.stringify(value));
+    } catch (error) {
+      console.warn("Failed to save to AsyncStorage:", error);
+    }
   },
-  removeItem: (name: string): void => {
-    storage.delete(name);
+  removeItem: async (name: string): Promise<void> => {
+    try {
+      await AsyncStorage.removeItem(name);
+    } catch (error) {
+      console.warn("Failed to remove from AsyncStorage:", error);
+    }
   },
 };
 
@@ -190,7 +198,7 @@ export const usePetRegistrationStore = create<PetRegistrationStore>()(
       }),
       {
         name: "pet-registration-store",
-        storage: mmkvStorage,
+        storage: asyncStorage,
         // Only persist essential data, not UI state
         partialize: state => ({
           petData: state.petData,

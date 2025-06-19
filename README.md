@@ -5,7 +5,7 @@ A modern Expo + React Native app using Supabase Auth, TypeScript, and npm as the
 ## Features
 
 - Email/password authentication (Supabase)
-- Secure session storage (MMKV + SecureStore)
+- Secure session storage (SecureStore) and app state persistence (AsyncStorage)
 - SOLID-compliant architecture (hooks, context, separation of concerns)
 - TypeScript-first
 - npm for package management
