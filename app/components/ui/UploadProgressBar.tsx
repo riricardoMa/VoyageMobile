@@ -23,10 +23,10 @@ export const UploadProgressBar = ({ progress }: UploadProgressBarProps) => {
   });
 
   return (
-    <View className="h-2 w-full rounded-full bg-gray-200">
+    <View className="h-4 w-full overflow-hidden rounded-[5px] bg-[#CFCFCF]">
       <Animated.View
         style={[{ width }]}
-        className="bg-primary h-full rounded-full"
+        className="bg-iris-blue h-full rounded-[5px]"
       />
     </View>
   );
