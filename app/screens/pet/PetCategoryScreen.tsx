@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, SafeAreaView } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PetRegistrationStackParamList } from "@app/types/navigation";
-import { PetCategoryCard, TertiaryButton } from "@app/components/ui";
+import { PetCategoryCard, SecondaryButton } from "@app/components/ui";
 
 type PetCategoryScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -31,8 +31,10 @@ export default function PetCategoryScreen({
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1">
         {/* Category Title */}
-        <View className="mb-5 px-4 pt-6">
-          <Text className="text-2xl font-bold text-[#333333]">Category</Text>
+        <View className="mb-[10px] px-4 pt-6">
+          <Text className="my-5 text-2xl font-bold text-[#333333]">
+            Category
+          </Text>
         </View>
 
         {/* Pet Category Cards */}
@@ -56,13 +58,10 @@ export default function PetCategoryScreen({
 
         {/* Next Button */}
         <View className="px-4 pb-6">
-          <TertiaryButton
+          <SecondaryButton
             title="Next"
             onPress={handleNext}
             disabled={!selectedCategory}
-            className={`${
-              selectedCategory ? " bg-iris-parchment" : " bg-iris-parchment/50"
-            }`}
           />
         </View>
       </View>

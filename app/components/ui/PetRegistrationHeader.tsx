@@ -23,7 +23,7 @@ export const PetRegistrationHeader: React.FC<PetRegistrationHeaderProps> = ({
   const currentStep = getStepFromRouteName(routeName);
 
   return (
-    <View className="bg-white pb-4 pt-16">
+    <View className="bg-white pt-20">
       <View className="items-center px-4">
         <ProgressIndicator currentStep={currentStep} totalSteps={5} />
       </View>
