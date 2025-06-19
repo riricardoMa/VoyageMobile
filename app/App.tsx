@@ -106,9 +106,7 @@ function PetRegistrationStackNavigator() {
       screenOptions={{
         headerShown: true,
         animation: "slide_from_right",
-        header: ({ route }) => {
-          return <PetRegistrationHeader routeName={route.name} />;
-        },
+        header: () => <PetRegistrationHeader />,
       }}
     >
       <PetRegistrationStack.Screen

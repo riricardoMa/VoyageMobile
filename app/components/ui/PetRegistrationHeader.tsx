@@ -1,31 +1,15 @@
 import React from "react";
 import { View } from "react-native";
 import { ProgressIndicator } from "./ProgressIndicator";
+import { usePetRegistrationProgress } from "@app/state";
 
-interface PetRegistrationHeaderProps {
-  routeName: string;
-}
-
-const getStepFromRouteName = (routeName: string): number => {
-  const stepMap: Record<string, number> = {
-    PetCategory: 1,
-    PetPhoto: 2,
-    PetBasicInfo: 3,
-    PetBirthday: 4,
-    PetSex: 5,
-  };
-  return stepMap[routeName] || 1;
-};
-
-export const PetRegistrationHeader: React.FC<PetRegistrationHeaderProps> = ({
-  routeName,
-}) => {
-  const currentStep = getStepFromRouteName(routeName);
+export const PetRegistrationHeader: React.FC = () => {
+  const { currentStep, totalSteps } = usePetRegistrationProgress();
 
   return (
     <View className="bg-white pt-20">
       <View className="items-center px-4">
-        <ProgressIndicator currentStep={currentStep} totalSteps={5} />
+        <ProgressIndicator currentStep={currentStep} totalSteps={totalSteps} />
       </View>
     </View>
   );
