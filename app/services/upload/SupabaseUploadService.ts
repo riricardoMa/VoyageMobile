@@ -174,20 +174,20 @@ export class SupabaseUploadService implements IUploadService {
       const folder = options?.folder || "uploads";
       const fileName = `${folder}/${file.id}_${file.name}`;
 
-      // Read file as base64
+      // Read file as base64 for React Native
       const base64 = await FileSystem.readAsStringAsync(file.uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
 
-      // Convert base64 to blob
-      const blob = this.base64ToBlob(base64, file.mimeType);
+      // Convert base64 to ArrayBuffer for Supabase
+      const arrayBuffer = this.base64ToArrayBuffer(base64);
 
       this.updateProgress(file.id, { progress: 25, status: "uploading" });
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage using ArrayBuffer
       const { error } = await supabase.storage
         .from(this.bucketName)
-        .upload(fileName, blob, {
+        .upload(fileName, arrayBuffer, {
           contentType: file.mimeType,
           upsert: false,
         });
@@ -308,15 +308,14 @@ export class SupabaseUploadService implements IUploadService {
     this.uploadProgress.set(fileId, { ...current, ...progress });
   }
 
-  private base64ToBlob(base64: string, mimeType: string): Blob {
-    const byteCharacters = atob(base64);
-    const byteNumbers = new Array(byteCharacters.length);
+  private base64ToArrayBuffer(base64: string): ArrayBuffer {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
 
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
     }
 
-    const byteArray = new Uint8Array(byteNumbers);
-    return new Blob([byteArray], { type: mimeType });
+    return bytes.buffer;
   }
 }

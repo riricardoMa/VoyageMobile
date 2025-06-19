@@ -1,5 +1,6 @@
 import * as FileSystem from "expo-file-system";
 import * as VideoThumbnails from "expo-video-thumbnails";
+import * as ImageManipulator from "expo-image-manipulator";
 import type {
   IMediaProcessor,
   MediaFile,
@@ -19,8 +20,6 @@ export class MediaProcessor implements IMediaProcessor {
 
     try {
       // Using Expo ImageManipulator for resizing
-      const { ImageManipulator } = await import("expo-image-manipulator");
-
       const manipulatedImage = await ImageManipulator.manipulateAsync(
         file.uri,
         [{ resize: { width: options.width, height: options.height } }],
