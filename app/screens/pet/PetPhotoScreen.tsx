@@ -296,7 +296,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row gap-3 px-4 pb-3">
+        <View className="flex-row gap-3 px-4 pt-3">
           <View className="flex-1">
             <TertiaryButton
               title="Back"
