@@ -276,47 +276,6 @@ export class SupabaseUploadService implements IUploadService {
         .from(bucketName)
         .getPublicUrl(fileName);
 
-      if (!urlData?.publicUrl) {
-        const errorMessage = "Failed to generate public URL";
-        console.error(errorMessage);
-        this.updateProgress(file.id, {
-          progress: 0,
-          status: "error",
-          error: errorMessage,
-        });
-        return {
-          success: false,
-          fileId: file.id,
-          error: errorMessage,
-        };
-      }
-
-      // Test the public URL by making a HEAD request to ensure it's accessible
-      // Skip this test for public buckets as they should be accessible
-      if (!options?.usePublicBucket) {
-        try {
-          const response = await fetch(urlData.publicUrl, { method: "HEAD" });
-          if (!response.ok) {
-            throw new Error(
-              `Public URL not accessible: ${response.status} ${response.statusText}`
-            );
-          }
-        } catch (urlError) {
-          console.error("Public URL test failed:", urlError);
-          const errorMessage = `Uploaded file is not publicly accessible: ${urlError instanceof Error ? urlError.message : "Unknown error"}`;
-          this.updateProgress(file.id, {
-            progress: 0,
-            status: "error",
-            error: errorMessage,
-          });
-          return {
-            success: false,
-            fileId: file.id,
-            error: errorMessage,
-          };
-        }
-      }
-
       let thumbnailUrl: string | undefined;
 
       // Generate and upload thumbnail for videos if requested
@@ -336,13 +295,6 @@ export class SupabaseUploadService implements IUploadService {
       }
 
       this.updateProgress(file.id, { progress: 100, status: "completed" });
-
-      console.log("✅ Upload successful:", {
-        fileId: file.id,
-        fileName,
-        bucket: bucketName,
-        publicUrl: urlData.publicUrl,
-      });
 
       return {
         success: true,

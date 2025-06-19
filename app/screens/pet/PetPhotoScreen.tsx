@@ -42,6 +42,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
     isUploading,
     error: uploadError,
     clearError,
+    getProgress,
   } = useUpload();
 
   // Pet registration store
@@ -91,22 +92,12 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
           return; // User cancelled
         }
 
-        console.log("📸 Selected image:", {
-          id: mediaFile.id,
-          name: mediaFile.name,
-          size: mediaFile.size,
-          type: mediaFile.type,
-        });
-
         // Upload the selected file
         const uploadResult = await uploadFile(mediaFile, uploadOptions);
-
-        console.log("📤 Upload result:", uploadResult);
 
         if (uploadResult.success) {
           // Store the upload result in the pet registration store
           setPetPhoto(uploadResult);
-          console.log("✅ Photo stored in state:", uploadResult);
         } else {
           Alert.alert(
             "Upload Failed",
@@ -115,7 +106,6 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
           );
         }
       } catch (error) {
-        console.error("Error selecting/uploading image:", error);
         Alert.alert(
           "Error",
           "An unexpected error occurred. Please try again.",
@@ -181,10 +171,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
               source={{ uri: existingPhoto.publicUrl }}
               className="h-full w-full rounded-xl bg-gray-200"
               resizeMode="cover"
-              onLoad={() => console.log("✅ Image loaded successfully")}
-              onError={error => {
-                console.log("❌ Image load error:", error);
-                console.log("❌ Failed URL:", existingPhoto.publicUrl);
+              onError={() => {
                 // If image fails to load, clear the photo state to show upload area again
                 clearPetPhoto();
                 Alert.alert(
