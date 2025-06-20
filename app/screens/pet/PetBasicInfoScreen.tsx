@@ -33,9 +33,9 @@ export default function PetBasicInfoScreen({
 
   return (
     <PetRegistrationLayout
-      title="Tell us about your pet"
+      title="Basic Information"
       footer={
-        <View className="flex-row gap-3">
+        <View className="flex-row gap-3 py-3">
           <View className="flex-1">
             <TertiaryButton title="Back" onPress={handleBack} />
           </View>
@@ -55,14 +55,14 @@ export default function PetBasicInfoScreen({
             label="What's your pet's name?"
             value={name}
             onChangeText={setPetName}
-            placeholder="e.g. Bubu"
+            placeholder="Pet's name"
             autoCapitalize="words"
           />
           <Input
-            label="What do you want to be called?"
+            label="How do you want your pet to call you?"
             value={ownerTitle}
             onChangeText={setPetOwnerTitle}
-            placeholder="e.g. Mama, Papa, or your name"
+            placeholder="Mama/Papa/your name"
             autoCapitalize="words"
           />
         </View>
