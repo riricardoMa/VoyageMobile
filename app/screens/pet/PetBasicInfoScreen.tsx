@@ -1,8 +1,10 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PetRegistrationStackParamList } from "@app/types/navigation";
-import { PrimaryButton, Button } from "@app/components/ui";
+import { SecondaryButton, TertiaryButton, Input } from "@app/components/ui";
+import { PetRegistrationLayout } from "@app/components/layout";
+import { usePetBasicInfo, usePetRegistrationProgress } from "@app/state";
 
 type PetBasicInfoScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -12,27 +14,59 @@ type PetBasicInfoScreenProps = NativeStackScreenProps<
 export default function PetBasicInfoScreen({
   navigation,
 }: PetBasicInfoScreenProps) {
+  const { name, ownerTitle, setPetName, setPetOwnerTitle } = usePetBasicInfo();
+  const { nextStep, previousStep } = usePetRegistrationProgress();
+
   const handleNext = () => {
-    navigation.navigate("PetBirthday");
+    if (name.trim() && ownerTitle.trim()) {
+      nextStep();
+      navigation.navigate("PetBirthday");
+    }
   };
 
   const handleBack = () => {
+    previousStep();
     navigation.goBack();
   };
 
-  return (
-    <View className="bg-background flex-1 items-center justify-center px-6">
-      <Text className="text-primary mb-8 text-2xl font-bold">
-        Pet Basic Info - Step 3/5
-      </Text>
-      <Text className="mb-8 text-center text-base text-gray-600">
-        TODO: Implement pet name and owner nickname inputs
-      </Text>
+  const isNextDisabled = !name.trim() || !ownerTitle.trim();
 
-      <View className="w-full flex-col gap-4">
-        <PrimaryButton title="Next" onPress={handleNext} />
-        <Button title="Back" variant="outline" onPress={handleBack} />
+  return (
+    <PetRegistrationLayout
+      title="Tell us about your pet"
+      footer={
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <TertiaryButton title="Back" onPress={handleBack} />
+          </View>
+          <View className="flex-1">
+            <SecondaryButton
+              title="Next"
+              onPress={handleNext}
+              disabled={isNextDisabled}
+            />
+          </View>
+        </View>
+      }
+    >
+      <View className="px-4">
+        <View className="gap-6">
+          <Input
+            label="What's your pet's name?"
+            value={name}
+            onChangeText={setPetName}
+            placeholder="e.g. Bubu"
+            autoCapitalize="words"
+          />
+          <Input
+            label="What do you want to be called?"
+            value={ownerTitle}
+            onChangeText={setPetOwnerTitle}
+            placeholder="e.g. Mama, Papa, or your name"
+            autoCapitalize="words"
+          />
+        </View>
       </View>
-    </View>
+    </PetRegistrationLayout>
   );
 }
