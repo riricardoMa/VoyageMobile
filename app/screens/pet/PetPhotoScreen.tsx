@@ -228,33 +228,33 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
 
     // Show initial upload state
     return (
-      <View>
+      <View className="flex-1 items-center justify-center">
         <View className="items-center gap-2">
-          <View className="h-6">
-            <Text className="text-primary text-center text-lg font-bold">
-              Add a photo
-            </Text>
-          </View>
-          <Text className="text-center text-sm text-gray-700">
+          <Text className="text-center text-lg font-bold text-zinc-800">
+            Add a photo
+          </Text>
+          <Text className="text-center text-sm font-normal text-zinc-800">
             Take a photo or upload one from your library
           </Text>
         </View>
 
-        <View className="w-full max-w-[200px] gap-3">
+        <View className="items-center gap-6 pt-6">
           <TouchableOpacity
             onPress={handleTakePhoto}
-            className="bg-background h-12 items-center justify-center rounded-xl px-4"
+            className="h-10 w-full min-w-20 max-w-[480px] items-center justify-center rounded-xl bg-orange-100 px-4"
             disabled={isLoadingState}
           >
-            <Text className="text-sm font-bold text-gray-800">Take photo</Text>
+            <Text className="text-center text-sm font-bold text-zinc-800">
+              Take photo
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleAddFromLibrary}
-            className="bg-background h-12 items-center justify-center rounded-xl px-4"
+            className="h-10 min-w-20 max-w-[480px] items-center justify-center rounded-xl bg-orange-100 px-4"
             disabled={isLoadingState}
           >
-            <Text className="text-sm font-bold text-gray-800">
+            <Text className="text-center text-sm font-bold text-zinc-800">
               Add from library
             </Text>
           </TouchableOpacity>
