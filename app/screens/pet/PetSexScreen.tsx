@@ -17,7 +17,7 @@ import {
   usePetData,
   usePetRegistration,
 } from "@app/state";
-import { usePetApi } from "@app/services/network";
+import { usePetApi, useNetworkDebug } from "@app/services/network";
 import type { CreatePetRequest } from "@app/services/network/endpoints/petEndpoints";
 
 type PetSexScreenProps = NativeStackScreenProps<
@@ -31,6 +31,7 @@ export default function PetSexScreen({ navigation }: PetSexScreenProps) {
   const petData = usePetData();
   const { resetPetRegistration } = usePetRegistration();
   const { createPet, loading, error } = usePetApi();
+  const { showLatestResponse, totalRequests } = useNetworkDebug();
 
   // Helper function to transform pet data for API
   const transformPetDataForApi = (): CreatePetRequest | null => {
@@ -190,6 +191,16 @@ export default function PetSexScreen({ navigation }: PetSexScreenProps) {
           onPress={() => setPetSex("girl")}
         />
       </View>
+
+      {/* Debug button - only visible in development */}
+      {__DEV__ && totalRequests > 0 && (
+        <View className="mb-4 px-4">
+          <TertiaryButton
+            title={`🐛 Show Last API Response (${totalRequests} total)`}
+            onPress={showLatestResponse}
+          />
+        </View>
+      )}
     </PetRegistrationLayout>
   );
 }

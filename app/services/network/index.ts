@@ -22,3 +22,6 @@ export type {
   PetCategory,
   PetSex,
 } from "./endpoints/petEndpoints";
+
+// Debug utilities
+export { useNetworkDebug } from "./hooks/useNetworkDebug";

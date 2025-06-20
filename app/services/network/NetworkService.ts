@@ -7,6 +7,8 @@ import type {
   ApiEndpoint,
   INetworkService,
 } from "./types/NetworkTypes";
+import { addNetworkLog } from "./hooks/useNetworkDebug";
+import { z } from "zod";
 
 export class NetworkService implements INetworkService {
   private client: AxiosInstance;
@@ -151,8 +153,42 @@ export class NetworkService implements INetworkService {
           ...mergedConfig,
         });
 
+        // Enhanced logging for debugging
+        console.log("=== NETWORK RESPONSE ===");
+        console.log("URL:", url);
+        console.log("Method:", method);
+        console.log("Status:", response.status);
+        console.log("Response Data:", JSON.stringify(response.data, null, 2));
+        console.log("========================");
+
+        // Add to debug log system
+        if (__DEV__) {
+          addNetworkLog({
+            url,
+            method,
+            status: response.status,
+            requestData: data,
+            responseData: response.data,
+          });
+        }
+
+        // Uncomment this line to see response in Alert (for debugging only)
+        // if (__DEV__) {
+        //   const { Alert } = require('react-native');
+        //   Alert.alert(
+        //     'Network Response',
+        //     `URL: ${url}\nStatus: ${response.status}\nData: ${JSON.stringify(response.data, null, 2).substring(0, 500)}...`
+        //   );
+        // }
+
+        const beResponseSchema = z.object({
+          data: responseSchema,
+          message: z.string().optional(),
+          success: z.boolean().optional(),
+        });
+
         // Validate response
-        const validation = responseSchema.safeParse(response.data);
+        const validation = beResponseSchema.safeParse(response.data);
         if (!validation.success) {
           throw new Error(`Invalid response data: ${validation.error.message}`);
         }
@@ -167,7 +203,7 @@ export class NetworkService implements INetworkService {
           this.setCache(cacheKey, validatedData, ttl);
         }
 
-        return validatedData;
+        return validatedData as TResponse;
       } catch (error) {
         lastError = error as NetworkError;
 
