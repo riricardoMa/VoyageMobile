@@ -8,9 +8,17 @@ import {
   SecondaryButton,
   TertiaryButton,
   PetCategoryCard,
+  LoadingSpinner,
 } from "@app/components/ui";
 import { PetRegistrationLayout } from "@app/components/layout";
-import { usePetRegistrationProgress, usePetSex } from "@app/state";
+import {
+  usePetRegistrationProgress,
+  usePetSex,
+  usePetData,
+  usePetRegistration,
+} from "@app/state";
+import { usePetApi } from "@app/services/network";
+import type { CreatePetRequest } from "@app/services/network/endpoints/petEndpoints";
 
 type PetSexScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -19,18 +27,77 @@ type PetSexScreenProps = NativeStackScreenProps<
 
 export default function PetSexScreen({ navigation }: PetSexScreenProps) {
   const { sex, setPetSex } = usePetSex();
-  const { previousStep } = usePetRegistrationProgress();
+  const { previousStep, goToStep } = usePetRegistrationProgress();
+  const petData = usePetData();
+  const { resetPetRegistration } = usePetRegistration();
+  const { createPet, loading, error } = usePetApi();
 
-  // TODO: implement actual registration logic
-  const handleRegister = () => {
-    /*
-     * Registration flow is handled in a later task.
-     * Keep this placeholder alert for now to verify UI.
-     */
-    Alert.alert(
-      "Registration Complete",
-      "Pet registration completed successfully!"
-    );
+  // Helper function to transform pet data for API
+  const transformPetDataForApi = (): CreatePetRequest | null => {
+    if (
+      !petData.category ||
+      !petData.photoUploadResult ||
+      !petData.sex ||
+      !petData.birthday ||
+      !petData.name.trim() ||
+      !petData.ownerTitle.trim() ||
+      !petData.photoUploadResult.filePath
+    ) {
+      return null;
+    }
+
+    return {
+      name: petData.name.trim(),
+      type: petData.category.toUpperCase() as "DOG" | "CAT",
+      avatarFilePath: petData.photoUploadResult.filePath,
+      ownerTitle: petData.ownerTitle.trim(),
+      birthday: petData.birthday.toISOString(),
+      sex: petData.sex.toUpperCase() as "BOY" | "GIRL",
+    };
+  };
+
+  const handleRegister = async () => {
+    const apiData = transformPetDataForApi();
+
+    if (!apiData) {
+      Alert.alert(
+        "Incomplete Registration",
+        "Please complete all required fields before registering."
+      );
+      return;
+    }
+
+    try {
+      const result = await createPet(apiData);
+
+      if (result) {
+        Alert.alert(
+          "Registration Complete",
+          "Pet registration completed successfully!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // Reset registration data after successful registration
+                resetPetRegistration();
+                // Navigate back to the beginning or wherever appropriate
+                navigation.navigate("PetCategory");
+              },
+            },
+          ]
+        );
+      } else {
+        Alert.alert(
+          "Registration Failed",
+          error || "Failed to register pet. Please try again."
+        );
+      }
+    } catch (err) {
+      Alert.alert(
+        "Registration Error",
+        "An unexpected error occurred. Please try again."
+      );
+    }
   };
 
   const handleBack = () => {
@@ -38,10 +105,50 @@ export default function PetSexScreen({ navigation }: PetSexScreenProps) {
     navigation.goBack();
   };
 
-  const handleAddAnother = () => {
-    // Placeholder implementation: navigate back to category selection
-    navigation.navigate("PetCategory");
+  const handleAddAnother = async () => {
+    const apiData = transformPetDataForApi();
+
+    if (!apiData) {
+      Alert.alert(
+        "Incomplete Registration",
+        "Please complete all required fields before adding another pet."
+      );
+      return;
+    }
+
+    try {
+      const result = await createPet(apiData);
+
+      if (result) {
+        // Clear current pet registration data after successful creation
+        resetPetRegistration();
+        // Move back to step 1 (category selection)
+        goToStep(1);
+        navigation.navigate("PetCategory");
+      } else {
+        Alert.alert(
+          "Registration Failed",
+          error || "Failed to register pet. Please try again."
+        );
+      }
+    } catch (err) {
+      Alert.alert(
+        "Registration Error",
+        "An unexpected error occurred. Please try again."
+      );
+    }
   };
+
+  // Show loading spinner when API call is in progress
+  if (loading) {
+    return (
+      <PetRegistrationLayout title="Sex" footer={<View />}>
+        <View className="flex-1 items-center justify-center">
+          <LoadingSpinner />
+        </View>
+      </PetRegistrationLayout>
+    );
+  }
 
   return (
     <PetRegistrationLayout
@@ -57,7 +164,7 @@ export default function PetSexScreen({ navigation }: PetSexScreenProps) {
               <SecondaryButton
                 title="Add Another"
                 onPress={handleAddAnother}
-                disabled={!sex}
+                disabled={!sex || loading}
               />
             </View>
           </View>
@@ -66,7 +173,7 @@ export default function PetSexScreen({ navigation }: PetSexScreenProps) {
           <PrimaryButton
             title="Register"
             onPress={handleRegister}
-            disabled={!sex}
+            disabled={!sex || loading}
           />
         </View>
       }
