@@ -1,10 +1,7 @@
 import axios, { type AxiosInstance, type AxiosError } from "axios";
-import { z } from "zod";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "@services/auth/supabase";
 import type {
   NetworkError,
-  ApiResponse,
   RequestConfig,
   CacheEntry,
   ApiEndpoint,
