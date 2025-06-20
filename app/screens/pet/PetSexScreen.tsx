@@ -10,7 +10,7 @@ import {
   PetCategoryCard,
 } from "@app/components/ui";
 import { PetRegistrationLayout } from "@app/components/layout";
-import { usePetSex } from "@app/state";
+import { usePetRegistrationProgress, usePetSex } from "@app/state";
 
 type PetSexScreenProps = NativeStackScreenProps<
   PetRegistrationStackParamList,
@@ -19,6 +19,7 @@ type PetSexScreenProps = NativeStackScreenProps<
 
 export default function PetSexScreen({ navigation }: PetSexScreenProps) {
   const { sex, setPetSex } = usePetSex();
+  const { previousStep } = usePetRegistrationProgress();
 
   // TODO: implement actual registration logic
   const handleRegister = () => {
@@ -33,6 +34,7 @@ export default function PetSexScreen({ navigation }: PetSexScreenProps) {
   };
 
   const handleBack = () => {
+    previousStep();
     navigation.goBack();
   };
 
