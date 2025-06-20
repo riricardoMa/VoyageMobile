@@ -30,6 +30,9 @@ export default function PetBirthdayScreen({
     navigation.goBack();
   }, [navigation, previousStep]);
 
+  const today = new Date();
+  const isBirthdayValid = birthday !== null && birthday <= today;
+
   return (
     <PetRegistrationLayout
       title="Birthday"
@@ -42,7 +45,7 @@ export default function PetBirthdayScreen({
             <SecondaryButton
               title="Next"
               onPress={handleNext}
-              disabled={!birthday}
+              disabled={!isBirthdayValid}
             />
           </View>
         </View>
@@ -60,7 +63,11 @@ export default function PetBirthdayScreen({
 
       {/* Date picker */}
       <View className="px-4 pt-2">
-        <DatePicker value={birthday} onChange={setPetBirthday} />
+        <DatePicker
+          value={birthday}
+          onChange={setPetBirthday}
+          maximumDate={today}
+        />
       </View>
     </PetRegistrationLayout>
   );
