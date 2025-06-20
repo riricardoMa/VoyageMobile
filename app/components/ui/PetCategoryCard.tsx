@@ -1,9 +1,15 @@
 import React from "react";
-import { TouchableOpacity, Text, Image, View } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  Image,
+  View,
+  type ImageSourcePropType,
+} from "react-native";
 
 interface PetCategoryCardProps {
   title: string;
-  image: any;
+  image?: ImageSourcePropType;
   selected: boolean;
   onPress: () => void;
 }
@@ -26,12 +32,14 @@ export const PetCategoryCard: React.FC<PetCategoryCardProps> = ({
       activeOpacity={0.8}
     >
       <View className="flex-1 items-center justify-center">
-        <Image
-          source={image}
-          className="mb-2"
-          style={{ width: 122, height: 114 }}
-          resizeMode="contain"
-        />
+        {image && (
+          <Image
+            source={image}
+            className="mb-2"
+            style={{ width: 122, height: 114 }}
+            resizeMode="contain"
+          />
+        )}
         <Text className="text-lg font-medium text-[#333333]">{title}</Text>
       </View>
     </TouchableOpacity>
