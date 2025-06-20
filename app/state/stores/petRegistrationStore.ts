@@ -52,7 +52,7 @@ const initialState: PetRegistrationState = {
   petData: initialPetData,
   isComplete: false,
   currentStep: 1,
-  totalSteps: 6, // category, photo, sex, birthday, name, ownerTitle
+  totalSteps: 5, // category, photo, sex, birthday, name
 };
 
 // Store type combining state and actions
