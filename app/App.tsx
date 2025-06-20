@@ -6,6 +6,7 @@ import { TouchableOpacity } from "react-native";
 import { AuthProvider, useAuth } from "./services/auth/useAuth";
 import { UploadProvider } from "./services/upload";
 import { I18nProvider } from "./services/i18n";
+import { NetworkProvider } from "./services/network";
 
 // Screen imports
 import { SplashScreen } from "@screens/SplashScreen";
@@ -206,18 +207,22 @@ export default function App() {
     process.env.EXPO_PUBLIC_SUPABASE_BUCKET_NAME || "media-staging";
   const publicBucketName =
     process.env.EXPO_PUBLIC_SUPABASE_PUBLIC_BUCKET_NAME || "media-public";
+  const apiBaseURL =
+    process.env.EXPO_PUBLIC_API_BASE_URL || "https://your-api.com/api";
 
   return (
     <I18nProvider>
       <AuthProvider>
-        <UploadProvider
-          privateBucketName={privateBucketName}
-          publicBucketName={publicBucketName}
-        >
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
-        </UploadProvider>
+        <NetworkProvider baseURL={apiBaseURL}>
+          <UploadProvider
+            privateBucketName={privateBucketName}
+            publicBucketName={publicBucketName}
+          >
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+          </UploadProvider>
+        </NetworkProvider>
       </AuthProvider>
     </I18nProvider>
   );
