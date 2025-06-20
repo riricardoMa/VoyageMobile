@@ -9,3 +9,4 @@ export { ProgressIndicator } from "./ProgressIndicator";
 export { PetCategoryCard } from "./PetCategoryCard";
 export { PetRegistrationHeader } from "./PetRegistrationHeader";
 export { UploadProgressBar } from "./UploadProgressBar";
+export { DatePicker } from "./DatePicker";
