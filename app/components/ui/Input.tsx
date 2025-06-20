@@ -18,8 +18,10 @@ export const Input: React.FC<InputProps> = ({
 }) => {
   const getInputClasses = () => {
     const baseClasses =
-      "bg-fuschia-rodeo-dust/25 h-[56px] rounded-2xl p-4 text-base font-normal text-[#333333] placeholder:text-[#59738C] placeholder:text-base placeholder:font-normal";
-    const errorClasses = error ? "border border-[#852221]" : "";
+      "bg-iris-bone/25 h-[56px] rounded-xl p-4 text-base font-normal text-[#333333] placeholder:text-slate-500 placeholder:text-base placeholder:font-normal";
+    const errorClasses = error
+      ? "border border-schemes-on-error-container"
+      : "";
 
     return cn(baseClasses, errorClasses, className);
   };
@@ -48,7 +50,9 @@ export const Input: React.FC<InputProps> = ({
             size={24}
             color="#852221"
           />
-          <Text className="mt-1 text-sm text-red-600">{error}</Text>
+          <Text className="mt-1 text-sm text-schemes-on-error-container">
+            {error}
+          </Text>
         </View>
       )}
     </View>
