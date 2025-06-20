@@ -2,37 +2,37 @@ import { z } from "zod";
 import type { ApiEndpoint } from "../types/NetworkTypes";
 
 // Schemas
-const PetCategorySchema = z.enum(["dog", "cat"]);
-const PetSexSchema = z.enum(["male", "female"]);
+const PetCategorySchema = z.enum(["DOG", "CAT"]);
+const PetSexSchema = z.enum(["BOY", "GIRL"]);
 
 const CreatePetRequestSchema = z.object({
-  name: z.string().min(1, "Pet name is required"),
-  category: PetCategorySchema,
+  name: z
+    .string()
+    .min(1, "Pet name is required")
+    .max(100, "Pet name must be less than 100 characters"),
+  type: PetCategorySchema,
+  avatarFilePath: z.string().min(1, "Avatar file path is required"),
+  ownerTitle: z
+    .string()
+    .min(1, "Owner title is required")
+    .max(50, "Owner title must be less than 50 characters"),
+  birthday: z
+    .string()
+    .datetime("Invalid birthday format. Expected ISO 8601 datetime string"),
   sex: PetSexSchema,
-  birthday: z.string().datetime(),
-  photoUrl: z.string().url().optional(),
-  ownerTitle: z.string().optional(),
-});
-
-const UpdatePetRequestSchema = z.object({
-  name: z.string().min(1, "Pet name is required").optional(),
-  category: PetCategorySchema.optional(),
-  sex: PetSexSchema.optional(),
-  birthday: z.string().datetime().optional(),
-  photoUrl: z.string().url().optional(),
-  ownerTitle: z.string().optional(),
 });
 
 const PetResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   name: z.string(),
-  category: PetCategorySchema,
+  type: PetCategorySchema,
+  avatarFilePath: z.string(),
+  ownerTitle: z.string(),
+  birthday: z.coerce.date(),
   sex: PetSexSchema,
-  birthday: z.string().datetime(),
-  photoUrl: z.string().url().optional(),
-  ownerTitle: z.string().optional(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  ownerId: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 const GetPetsResponseSchema = z.object({
@@ -42,24 +42,17 @@ const GetPetsResponseSchema = z.object({
   limit: z.number().optional(),
 });
 
-const DeletePetResponseSchema = z.object({
-  success: z.boolean(),
-  message: z.string(),
-});
-
 // Type exports
 export type CreatePetRequest = z.infer<typeof CreatePetRequestSchema>;
-export type UpdatePetRequest = z.infer<typeof UpdatePetRequestSchema>;
 export type PetResponse = z.infer<typeof PetResponseSchema>;
 export type GetPetsResponse = z.infer<typeof GetPetsResponseSchema>;
-export type DeletePetResponse = z.infer<typeof DeletePetResponseSchema>;
 export type PetCategory = z.infer<typeof PetCategorySchema>;
 export type PetSex = z.infer<typeof PetSexSchema>;
 
 // Endpoint definitions
 export const petEndpoints = {
   getPets: {
-    url: "/pets",
+    url: "/pet-profile",
     method: "GET" as const,
     responseSchema: GetPetsResponseSchema,
     config: {
@@ -70,7 +63,7 @@ export const petEndpoints = {
   } satisfies ApiEndpoint<never, GetPetsResponse>,
 
   createPet: {
-    url: "/pets",
+    url: "/pet-profile",
     method: "POST" as const,
     requestSchema: CreatePetRequestSchema,
     responseSchema: PetResponseSchema,
@@ -81,7 +74,7 @@ export const petEndpoints = {
 
   getPet: (id: string) =>
     ({
-      url: `/pets/${id}`,
+      url: `/pet-profile/${id}`,
       method: "GET" as const,
       responseSchema: PetResponseSchema,
       config: {
@@ -90,25 +83,4 @@ export const petEndpoints = {
         cacheKey: `pet-${id}`,
       },
     }) satisfies ApiEndpoint<never, PetResponse>,
-
-  updatePet: (id: string) =>
-    ({
-      url: `/pets/${id}`,
-      method: "PUT" as const,
-      requestSchema: UpdatePetRequestSchema,
-      responseSchema: PetResponseSchema,
-      config: {
-        retries: 1,
-      },
-    }) satisfies ApiEndpoint<UpdatePetRequest, PetResponse>,
-
-  deletePet: (id: string) =>
-    ({
-      url: `/pets/${id}`,
-      method: "DELETE" as const,
-      responseSchema: DeletePetResponseSchema,
-      config: {
-        retries: 1,
-      },
-    }) satisfies ApiEndpoint<never, DeletePetResponse>,
 };

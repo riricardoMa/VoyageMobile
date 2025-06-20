@@ -17,10 +17,8 @@ export { usePetApi } from "./hooks/usePetApi";
 export { petEndpoints } from "./endpoints/petEndpoints";
 export type {
   CreatePetRequest,
-  UpdatePetRequest,
   PetResponse,
   GetPetsResponse,
-  DeletePetResponse,
   PetCategory,
   PetSex,
 } from "./endpoints/petEndpoints";

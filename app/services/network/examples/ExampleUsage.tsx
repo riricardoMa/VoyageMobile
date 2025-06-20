@@ -8,9 +8,11 @@ const MyComponent = () => {
     try {
       const newPet = await createPet({
         name: "Fluffy",
-        category: "cat",
-        sex: "female",
+        type: "CAT",
+        sex: "GIRL",
         birthday: new Date().toISOString(),
+        avatarFilePath: "example.jpg",
+        ownerTitle: "Owner",
       });
       console.log("Pet created:", newPet);
     } catch (error) {

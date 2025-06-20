@@ -3,10 +3,8 @@ import { useNetwork } from "../useNetwork";
 import {
   petEndpoints,
   type CreatePetRequest,
-  type UpdatePetRequest,
   type PetResponse,
   type GetPetsResponse,
-  type DeletePetResponse,
 } from "../endpoints/petEndpoints";
 
 export const usePetApi = () => {
@@ -74,60 +72,11 @@ export const usePetApi = () => {
     [networkService]
   );
 
-  const updatePet = useCallback(
-    async (id: string, data: UpdatePetRequest): Promise<PetResponse | null> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await networkService.put(
-          petEndpoints.updatePet(id),
-          data
-        );
-        // Invalidate related cache entries
-        networkService.removeCacheEntry("user-pets");
-        networkService.removeCacheEntry(`pet-${id}`);
-        return result;
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to update pet";
-        setError(errorMessage);
-        return null;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [networkService]
-  );
-
-  const deletePet = useCallback(
-    async (id: string): Promise<DeletePetResponse | null> => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await networkService.delete(petEndpoints.deletePet(id));
-        // Invalidate related cache entries
-        networkService.removeCacheEntry("user-pets");
-        networkService.removeCacheEntry(`pet-${id}`);
-        return result;
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to delete pet";
-        setError(errorMessage);
-        return null;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [networkService]
-  );
-
   return {
     // Operations
     getPets,
     createPet,
     getPet,
-    updatePet,
-    deletePet,
 
     // State
     loading,

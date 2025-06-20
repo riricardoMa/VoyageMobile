@@ -208,7 +208,7 @@ export default function App() {
   const publicBucketName =
     process.env.EXPO_PUBLIC_SUPABASE_PUBLIC_BUCKET_NAME || "media-public";
   const apiBaseURL =
-    process.env.EXPO_PUBLIC_API_BASE_URL || "https://your-api.com/api";
+    process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000/api/v1";
 
   return (
     <I18nProvider>
