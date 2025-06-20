@@ -41,8 +41,12 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   maximumDate,
   label,
 }) => {
+  // Make sure we always work with a Date instance (AsyncStorage persistence may hydrate as string)
+  const parsedValue: Date | null =
+    value instanceof Date ? value : value ? new Date(value) : null;
+
   // Local copy of the date while the picker is open (Android)
-  const [tempDate, setTempDate] = useState<Date>(value ?? new Date());
+  const [tempDate, setTempDate] = useState<Date>(parsedValue ?? new Date());
   const [show, setShow] = useState(false);
 
   // -------------------------------------------------------------
@@ -53,7 +57,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       <View className="w-full items-center">
         {label && <Text className="mb-2 text-base font-medium">{label}</Text>}
         <DateTimePicker
-          value={value ?? new Date()}
+          value={parsedValue ?? new Date()}
           mode="date"
           display="spinner"
           onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -73,7 +77,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   // Android – modal approach using the native date-picker dialog
   // -------------------------------------------------------------
   const openPicker = () => {
-    setTempDate(value ?? new Date());
+    setTempDate(parsedValue ?? new Date());
     setShow(true);
   };
 
@@ -90,13 +94,13 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       <TouchableOpacity
         className={cn(
           "h-11 w-full flex-row items-center justify-center rounded-3xl border-2 border-iris-bone bg-transparent",
-          value ? "bg-iris-parchment" : ""
+          parsedValue ? "bg-iris-parchment" : ""
         )}
         activeOpacity={0.7}
         onPress={openPicker}
       >
         <Text className="text-base font-bold text-[#333333]">
-          {value ? value.toDateString() : "Select date"}
+          {parsedValue ? parsedValue.toDateString() : "Select date"}
         </Text>
       </TouchableOpacity>
 
