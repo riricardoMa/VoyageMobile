@@ -84,7 +84,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
   const handleNext = useCallback(() => {
     if (existingPhoto?.success) {
       nextStep();
-      navigation.navigate("PetSex");
+      navigation.navigate("PetBasicInfo");
     }
   }, [existingPhoto, navigation, nextStep]);
 
