@@ -241,7 +241,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
         <View className="items-center gap-6 pt-6">
           <TouchableOpacity
             onPress={handleTakePhoto}
-            className="h-10 w-full min-w-20 max-w-[480px] items-center justify-center rounded-xl bg-orange-100 px-4"
+            className="h-10 w-full min-w-36 max-w-[480px] items-center justify-center rounded-xl bg-orange-100 px-4"
             disabled={isLoadingState}
           >
             <Text className="text-center text-sm font-bold text-zinc-800">
@@ -251,7 +251,7 @@ export default function PetPhotoScreen({ navigation }: PetPhotoScreenProps) {
 
           <TouchableOpacity
             onPress={handleAddFromLibrary}
-            className="h-10 min-w-20 max-w-[480px] items-center justify-center rounded-xl bg-orange-100 px-4"
+            className="h-10 min-w-36 max-w-[480px] items-center justify-center rounded-xl bg-orange-100 px-4"
             disabled={isLoadingState}
           >
             <Text className="text-center text-sm font-bold text-zinc-800">
